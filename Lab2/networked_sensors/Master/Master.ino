@@ -1,10 +1,11 @@
 #include <Wire.h>
 
+#define SLAVE_ADDR 8
+
 #define TEMP_PIN  A0
 #define LIGHT_PIN  A1
 #define POT_PIN A3
 
-#define SLAVE_ADDR 8
 
 int intensity = 0;
 int temperature = 0;
@@ -12,6 +13,7 @@ int potentiometer = 0;
 
 void sendMessage(int value) {
     Wire.beginTransmission(SLAVE_ADDR);
+    Serial.println(value);
     Wire.write(value);
     Wire.endTransmission();
 }
