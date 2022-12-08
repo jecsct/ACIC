@@ -1,3 +1,5 @@
+#include <Wire.h>
+
 #define TEMP_PIN  A0
 #define LIGHT_PIN  A1
 #define POT_PIN A3
@@ -20,7 +22,7 @@ void readTemperature() {
 }
 
 void readPotentiometer() {
-    int pot analogRead(POT_PIN);
+    int pot = analogRead(POT_PIN);
     potentiometer = map(pot, 0, 1023, 2, 20); //Should then be divided by 10
     sendMessage(potentiometer);
 }
