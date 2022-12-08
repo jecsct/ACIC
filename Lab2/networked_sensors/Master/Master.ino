@@ -2,8 +2,8 @@
 
 #define SLAVE_ADDR 8
 
-#define TEMP_PIN  A0
-#define LIGHT_PIN  A1
+#define TEMP_PIN A0
+#define LIGHT_PIN A1
 #define POT_PIN A3
 
 
@@ -20,18 +20,21 @@ void sendMessage(int value) {
 
 void readTemperature() {
     temperature = analogRead(TEMP_PIN);
+    Serial.println(temperature);
     sendMessage(temperature);
 }
 
 void readPotentiometer() {
     int pot = analogRead(POT_PIN);
     potentiometer = map(pot, 0, 1023, 2, 20); //Should then be divided by 10
+    Serial.println(potentiometer);
     sendMessage(potentiometer);
 }
 
 void readLight() {
     int light =  analogRead(LIGHT_PIN);
     intensity = map(light, 0, 1023, 0, 255);
+    Serial.println(intensity);
     sendMessage(intensity);
 }
 
