@@ -1,9 +1,11 @@
+#include <Wire.h>
+
 #define SLAVE_ADDR  8
 #define RED_LED_PIN  11
 #define GREEN_LED_PIN  12
 #define YELLOW_LED_PIN  13
 
-float potentiometerTime = 0.2;
+int potentiometerTime = 200;
 int temperature = 20;
 int intensity = 240;
 
