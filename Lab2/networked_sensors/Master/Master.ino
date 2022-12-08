@@ -21,21 +21,21 @@ void sendMessage(int value) {
 void readTemperature() {
     temperature = analogRead(TEMP_PIN);
     Serial.println(temperature);
-    sendMessage(temperature);
+    // sendMessage(temperature);
 }
 
 void readPotentiometer() {
     int pot = analogRead(POT_PIN);
     potentiometer = map(pot, 0, 1023, 2, 20); //Should then be divided by 10
     Serial.println(potentiometer);
-    sendMessage(potentiometer);
+    // sendMessage(potentiometer);
 }
 
 void readLight() {
     int light =  analogRead(LIGHT_PIN);
     intensity = map(light, 0, 1023, 0, 255);
     Serial.println(intensity);
-    sendMessage(intensity);
+    // sendMessage(intensity);
 }
 
 void setup() {
