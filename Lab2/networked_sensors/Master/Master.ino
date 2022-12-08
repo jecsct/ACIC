@@ -1,6 +1,6 @@
-#define TEMP_PIN  0
-#define POT_PIN  1
-#define LIGHT_PIN  2
+#define TEMP_PIN  A0
+#define LIGHT_PIN  A1
+#define POT_PIN A3
 
 #define SLAVE_ADDR 8
 
