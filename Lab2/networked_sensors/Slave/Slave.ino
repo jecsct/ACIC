@@ -7,17 +7,17 @@ float potentiometerTime = 0.2;
 int temperature = 20;
 int intensity = 240;
 
-int prevTime;
+int prevTime = 0;
 
-// void callbackFunction(int i) {
-//      while (1 < Wire.available()) {
-//            // make sure there is something to read
-//            char c = Wire.read(); // read the next byte as a char
-//            Serial.print(c);
-//      }
-//      int x = Wire.read();
-//      Serial.println(x);
-// }
+void callbackFunction(int i) {
+     while (1 < Wire.available()) {
+           // make sure there is something to read
+           char c = Wire.read(); // read the next byte as a char
+           Serial.print(c);
+     }
+     int x = Wire.read();
+     Serial.println(x);
+}
 
 
 void controlRed() {
@@ -29,7 +29,7 @@ void controlRed() {
 }
 
 void controlGreen() {
-    unsigned long currentTime = millis() 
+    unsigned long currentTime = millis();
     if (currentTime - prevTime > potentiometerTime) {
         if (digitalRead(GREEN_LED_PIN) == HIGH) {
             digitalWrite(GREEN_LED_PIN, LOW);
@@ -45,9 +45,9 @@ void controlYellow() {
 }
 
 void setup() {
-  // put your setup code here, to run once:
-    // Wire.begin(SLAVE_ADDR);
-    // Wire.onReceive(callbackFunction);
+    // put your setup code here, to run once:
+    Wire.begin(SLAVE_ADDR);
+    Wire.onReceive(callbackFunction);
     pinMode(RED_LED_PIN, OUTPUT);
     pinMode(GREEN_LED_PIN, OUTPUT);
     pinMode(YELLOW_LED_PIN, OUTPUT);
