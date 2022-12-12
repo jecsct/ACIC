@@ -6,6 +6,7 @@
 #define LIGHT_PIN A1
 #define POT_PIN A3
 
+//git sinc
 
 int intensity = 0;
 int temperature = 0;
