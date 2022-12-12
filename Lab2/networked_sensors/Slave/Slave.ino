@@ -1,9 +1,9 @@
 #include <Wire.h>
 
 #define SLAVE_ADDR  8
-#define RED_LED_PIN  11
-#define GREEN_LED_PIN  12
-#define YELLOW_LED_PIN  13
+#define GREEN_LED_PIN 2
+#define RED_LED_PIN 3
+#define YELLOW_LED_PIN 4
 
 int potentiometerTime = 200;
 int temperature = 20;
@@ -12,21 +12,31 @@ int intensity = 240;
 int prevTime = 0;
 
 void callbackFunction(int i) {
-     while (1 < Wire.available()) {
-           // make sure there is something to read
-           char c = Wire.read(); // read the next byte as a char
-           Serial.print(c);
-     }
-     int x = Wire.read();
-     Serial.println(x);
+    char c;
+    while (1 < Wire.available()) {
+          // make sure there is something to read
+          c = Wire.read(); // read the next byte as a char
+          Serial.print(c);
+    }
+    int x = Wire.read();
+
+    if (c == 'T') {
+      temperature = x;
+    } else if (c == "L") {
+      intensity = x;
+    } else if (c == 'P') {
+      potentiometerTime = x;
+    }
+    Serial.println(x);
+    Serial.println("=====");
 }
 
 
 void controlRed() {
     if (temperature > 26) {
-        digitalWrite(YELLOW_LED_PIN, HIGH);
+        digitalWrite(RED_LED_PIN, HIGH);
     } else {
-        digitalWrite(YELLOW_LED_PIN, LOW);
+        digitalWrite(RED_LED_PIN, LOW);
     }
 }
 
@@ -50,6 +60,7 @@ void setup() {
     // put your setup code here, to run once:
     Wire.begin(SLAVE_ADDR);
     Wire.onReceive(callbackFunction);
+    Serial.begin(9600);
     pinMode(RED_LED_PIN, OUTPUT);
     pinMode(GREEN_LED_PIN, OUTPUT);
     pinMode(YELLOW_LED_PIN, OUTPUT);

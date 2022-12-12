@@ -11,31 +11,34 @@ int intensity = 0;
 int temperature = 0;
 int potentiometer = 0;
 
-void sendMessage(int value) {
+void sendMessage(char sensor[], int value) {
     Wire.beginTransmission(SLAVE_ADDR);
-    Serial.println(value);
+    Wire.write(sensor);
     Wire.write(value);
     Wire.endTransmission();
 }
 
 void readTemperature() {
     temperature = analogRead(TEMP_PIN);
+    Serial.print("T ");
     Serial.println(temperature);
-    // sendMessage(temperature);
+    sendMessage("T", temperature);
 }
 
 void readPotentiometer() {
     int pot = analogRead(POT_PIN);
-    potentiometer = map(pot, 0, 1023, 2, 20); //Should then be divided by 10
+    potentiometer = map(pot, 0, 1023, 200, 2000); //Should then be divided by 10
+    Serial.print("P ");
     Serial.println(potentiometer);
-    // sendMessage(potentiometer);
+    sendMessage("P", potentiometer);
 }
 
 void readLight() {
     int light =  analogRead(LIGHT_PIN);
     intensity = map(light, 0, 1023, 0, 255);
+    Serial.print("L ");
     Serial.println(intensity);
-    // sendMessage(intensity);
+    sendMessage("L", intensity);
 }
 
 void setup() {
@@ -46,7 +49,9 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+
     readTemperature();
     readPotentiometer();
     readLight();
+    Serial.println("=====");
 }
