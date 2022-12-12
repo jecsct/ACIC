@@ -22,18 +22,22 @@ void callbackFunction(int i) {
 
     if (c == 'T') {
       temperature = x;
-    } else if (c == "L") {
+    } else if (c == 'L') {
       intensity = x;
     } else if (c == 'P') {
       potentiometerTime = x;
     }
     Serial.println(x);
     Serial.println("=====");
+    
 }
 
 
 void controlRed() {
-    if (temperature > 26) {
+    float temp = (temperature * 0.48828125) - 32;
+    float cel = (( temperature * 4.8828125  ) - 97.65625 ) * 0.1  - 40 ;
+    Serial.println(cel);
+    if (cel > 26) {
         digitalWrite(RED_LED_PIN, HIGH);
     } else {
         digitalWrite(RED_LED_PIN, LOW);
@@ -53,7 +57,7 @@ void controlGreen() {
 }
 
 void controlYellow() {
-    analogWrite(YELLOW_LED_PIN, intensity);
+    analogWrite(YELLOW_LED_PIN, 255-intensity);
 }
 
 void setup() {
