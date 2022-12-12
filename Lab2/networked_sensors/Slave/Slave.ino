@@ -16,7 +16,6 @@ void callbackFunction(int i) {
     while (1 < Wire.available()) {
           // make sure there is something to read
           c = Wire.read(); // read the next byte as a char
-          Serial.print(c);
     }
     int x = Wire.read();
 
@@ -26,9 +25,9 @@ void callbackFunction(int i) {
       intensity = x;
     } else if (c == 'P') {
       potentiometerTime = x;
+      Serial.println(x);
+
     }
-    Serial.println(x);
-    Serial.println("=====");
     
 }
 
@@ -36,7 +35,6 @@ void callbackFunction(int i) {
 void controlRed() {
     float temp = (temperature * 0.48828125) - 32;
     float cel = (( temperature * 4.8828125  ) - 97.65625 ) * 0.1  - 40 ;
-    Serial.println(cel);
     if (cel > 26) {
         digitalWrite(RED_LED_PIN, HIGH);
     } else {

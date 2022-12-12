@@ -28,7 +28,7 @@ void readTemperature() {
 
 void readPotentiometer() {
     int pot = analogRead(POT_PIN);
-    potentiometer = map(pot, 0, 1023, 200, 2000); //Should then be divided by 10
+    potentiometer = map(pot, 0, 1023, 0, 180);
     Serial.print("P ");
     Serial.println(potentiometer);
     sendMessage("P", potentiometer);
