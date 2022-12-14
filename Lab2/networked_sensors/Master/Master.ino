@@ -6,11 +6,12 @@
 #define LIGHT_PIN A1
 #define POT_PIN A3
 
-//git sinc
+#define LIGHT_MAX 200 // intensity equivalent to sensor under a ceiling light
 
-int intensity = 0;
+int light = 0;
 int temperature = 0;
 int potentiometer = 0;
+
 
 void sendMessage(char sensor[], int value) {
     Wire.beginTransmission(SLAVE_ADDR);
@@ -20,39 +21,31 @@ void sendMessage(char sensor[], int value) {
 }
 
 void readTemperature() {
-    temperature = analogRead(TEMP_PIN);
-    Serial.print("T ");
-    Serial.println(temperature);
+    int temp_read = analogRead(TEMP_PIN);
+    temperature = (((temp_read/1024.0) * 5.0) - 0.5) * 100; // convert to celsius
     sendMessage("T", temperature);
 }
 
 void readPotentiometer() {
-    int pot = analogRead(POT_PIN);
-    potentiometer = map(pot, 0, 1023, 0, 180);
-    Serial.print("P ");
-    Serial.println(potentiometer);
+    int pot_read = analogRead(POT_PIN);
+    potentiometer = map(pot_read, 0, 1023, 0, 180); // convert to [0, 180] interval
     sendMessage("P", potentiometer);
 }
 
 void readLight() {
-    int light =  analogRead(LIGHT_PIN);
-    intensity = map(light, 0, 1023, 0, 255);
-    Serial.print("L ");
-    Serial.println(intensity);
-    sendMessage("L", intensity);
+    int light_read =  analogRead(LIGHT_PIN);
+    light_read = constrain(light_read, 0, LIGHT_MAX);
+    light = map(light_read, 0, LIGHT_MAX, 0, 255); // convert to [0, 255] interval
+    sendMessage("L", light);
 }
 
 void setup() {
-  // put your setup code here, to run once:
     Serial.begin(9600);
     Wire.begin();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-    delay(500);
     readTemperature();
     readPotentiometer();
     readLight();
-    Serial.println("=====");
 }
