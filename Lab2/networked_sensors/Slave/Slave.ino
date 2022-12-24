@@ -10,6 +10,9 @@
 #define BLINK_MAX_PERIOD 2000
 #define TEMP_THRESHOLD 26
 
+
+#define TEMP_PIN A0
+
 int potentiometer;
 int temperature;
 int light;
@@ -35,13 +38,13 @@ void callbackFunction(int i) {
 }
 
 
-void controlRed() {
-    if (temperature >= TEMP_THRESHOLD) {
-        digitalWrite(RED_LED_PIN, HIGH);
-    } else {
-        digitalWrite(RED_LED_PIN, LOW);
-    }
-}
+// void controlRed() {
+//     if (temperature >= TEMP_THRESHOLD) {
+//         digitalWrite(RED_LED_PIN, HIGH);
+//     } else {
+//         digitalWrite(RED_LED_PIN, LOW);
+//     }
+// }
 
 void controlGreen() {
     int blink_period = map(potentiometer, 0, 180, BLINK_MIN_PERIOD/2, BLINK_MAX_PERIOD/2);
@@ -66,13 +69,27 @@ void setup() {
     Wire.begin(SLAVE_ADDR);
     Wire.onReceive(callbackFunction);
 
+    Wire.onRequest(sendData);
+
     pinMode(RED_LED_PIN, OUTPUT);
     pinMode(GREEN_LED_PIN, OUTPUT);
     pinMode(YELLOW_LED_PIN, OUTPUT);
 }
 
+
+void sendData() {
+  Wire.write(temperature);  // send a message to the master
+}
+
+void readTemperature() {
+    int temp_read = analogRead(TEMP_PIN);
+    temperature = (((temp_read/1024.0) * 5.0) - 0.5) * 100; // convert to celsius
+    // sendMessage("T", temperature);
+}
+
 void loop() {
-    controlRed();
+    // controlRed();
     controlGreen();
     controlYellow();
+    readTemperature();
 }
