@@ -23,7 +23,8 @@ int wait_timer;
 #define MIN_TIMER 2
 //Maximum timer for semaphore phase
 #define MAX_TIMER 15
-
+//Number of outside semaphores
+#define NUMBER_OF_ENTRIES 4 
 
 void comLEDUpdate(bool output){
   if (output){
@@ -61,12 +62,38 @@ void sendMessage() {
   }
 }
 
+// resets the state of the controller so that is ready to start from scratch
+void reset() {
+
+}
 
 //Reads and converts the potenciomenter value to miliseconds
 void readPotentiometer() {
     int pot_read = analogRead(POT_PIN);
     wait_timer = map(pot_read, 0, 1023, 2, 15) * 1000; // convert to [2, 15] interval
 }
+void controlSemaphores() {
+  int i = 0;
+  while (i < NUMBER_OF_ENTRIES) {
+    if (i != currentGreenSemaphore) {
+      sendMessage(API_RED, i);
+    }
+    i++;
+  }
+  sendMessage(API_GREEN, currentGreenSemaphore);
+}
+
+int timer = millis();
+int currentGreenSemaphore = 0;
+void control() {
+  if (power) {
+    if (millis() - timer > wait_timer) {
+      controlSemaphores();
+
+    }
+  }
+}
+
 
 
 void setup(){
@@ -81,4 +108,5 @@ void setup(){
 void loop(){
   powerLEDUpdate();
   readPotentiometer();
+  control()
 }
