@@ -50,6 +50,17 @@ void sendMessage(char[] value) {
     Wire.endTransmission();
 }
 
+void sendMessage() {
+  Wire.beginTransmission(entryNumber);
+  Wire.write(message);
+  Wire.endTransmission();
+  Wire.requestFrom(entryNumber, 1);
+  while(Wire.avaliable()) {
+    char c = Wire.read();
+    Serial.print(c)
+  }
+}
+
 
 //Reads and converts the potenciomenter value to miliseconds
 void readPotentiometer() {
