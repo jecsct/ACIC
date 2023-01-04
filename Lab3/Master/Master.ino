@@ -13,6 +13,7 @@ const int ped_sem[]= {11,12};
 //Pin for the pedestrian button
 #define PED_BUTTON 13
 
+//Blink timer when turned off
 const int off_blink_timer=500;
 
 
@@ -25,19 +26,19 @@ const int off_blink_timer=500;
 #define POT_PIN A0 
 //Reading from the potenciometer
 int potentiometer = 0;
+//Defines the wait timer in-between roundabout entrys
+int entry_timer;
 
 
 //Defines if system is on/off
 bool power;
 
-//Defines the wait timer in-between semaphore phases
-int wait_timer;
 //Minimum timer for semaphore phase
 #define MIN_TIMER 2
 //Maximum timer for semaphore phase
 #define MAX_TIMER 15
 //Number of outside semaphores
-#define NUMBER_OF_ENTRIES 4 
+#define NUMBER_OF_ENTRIES 2
 
 
 int timer = millis();
@@ -87,15 +88,15 @@ void sendMessage(char value) {
     Wire.endTransmission();
 }
 
-void sendMessage() {
-  // Wire.beginTransmission(entryNumber);
-  // Wire.write(message);
-  // Wire.endTransmission();
-  // Wire.requestFrom(entryNumber, 1);
-  // while(Wire.avaliable()) {
-  //   char c = Wire.read();
-  //   Serial.print(c);
-  // }
+void sendMessage( char message, int entry_number) {
+  Wire.beginTransmission(entry_number);
+  Wire.write(message);
+  Wire.endTransmission();
+  Wire.requestFrom(entry_number, 1);
+  while(Wire.available()) {
+    char c = Wire.read();
+    Serial.print(c);
+  }
 }
 
 // resets the state of the controller so that is ready to start from scratch
@@ -106,27 +107,25 @@ void reset() {
 //Reads and converts the potenciomenter value to miliseconds
 void readPotentiometer() {
     int pot_read = analogRead(POT_PIN);
-    wait_timer = map(pot_read, 0, 1023, 2, 15) * 1000; // convert to [2, 15] interval
+    entry_timer = map(pot_read, 0, 1023, 2, 15) * 1000; // convert to [2, 15] interval
 }
 
 void control() {
-  if (power) {
-    if (millis() - timer > wait_timer) {
+    if (millis() - timer > entry_timer) {
       controlSemaphores();
 
     }
-  }
 }
 
 void controlSemaphores() {
-  // int i = 0;
-  // while (i < NUMBER_OF_ENTRIES) {
-  //   if (i != currentGreenSemaphore) {
-  //     sendMessage(API_RED, i);
-  //   }
-  //   i++;
-  // }
-  // sendMessage(API_GREEN, currentGreenSemaphore);
+  int entry_number = 0;
+  while (entry_number < NUMBER_OF_ENTRIES) {
+    if (entry_number != currentGreenSemaphore) {
+      sendMessage(getApiRed(), entry_number);
+    }
+    entry_number++;
+  }
+  sendMessage(getApiGreen(), currentGreenSemaphore);
 }
 
 
@@ -137,15 +136,19 @@ void setup(){
   // pinMode(COM_LED, OUTPUT);
   semaphores_setup(); 
   power=false;
-  wait_timer=2000;
+  entry_timer=2000;
 }
 
 void loop(){
   if(power){
-    powerLEDUpdate();
+    setLEDPower(POWER_LED, true);
     readPotentiometer();
     control();
   }else{
+    
+    setLEDPower(POWER_LED, false);
+
+
     unsigned long start_time = millis();
     unsigned long current_time = millis();
 
