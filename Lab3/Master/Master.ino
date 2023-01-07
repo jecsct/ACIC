@@ -107,7 +107,7 @@ void sendMessage(char message, int entry_number) {
 // 
 void resetGreenSemaphore() {
   if ( currentGreenEntrySemaphore >= NUMBER_OF_ENTRIES){
-    currentGreenEntrySemaphore = 0
+    currentGreenEntrySemaphore = 0;
   }
 }
 
@@ -132,8 +132,8 @@ void controlSemaphores() {
   
   int entry_number = 0;
   for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++){
-    if (entry_number != currentGreenSemaphore) {
-      sendMessage(API_RED, entry_number);
+    if (entry_number != currentGreenEntrySemaphore) {
+      sendMessage(getApiRed(), entry_number);
     }
   }
   

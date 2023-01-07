@@ -17,6 +17,7 @@ int getMessageResponseSize(int message){
         {
             return 4;
         }
+    }
 }
 
 // what to send in the initial request
