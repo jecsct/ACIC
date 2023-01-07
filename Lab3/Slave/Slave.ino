@@ -17,6 +17,11 @@ bool power = false;
 
 const int off_blink_timer=500;
 
+int received_message = 0;
+int received_message_entry_number = 0;
+
+int status = 0;
+
 void semaphores_setup(){
   for ( int i = 0 ; i < 3 ; i++){
     pinMode(inner_sem[i], OUTPUT); 
@@ -38,12 +43,44 @@ void setLEDPower(int pinEntry, bool output){
   }
 }
 
-void receiveEvent(){
+void processMessage(int *array){
+  received_message_entry_number = array[0];
+  received_message = array[1];
+  switch(received_message){
+    case API_RED:{
+      setLEDPower(inner_sem[1], true);
+      setLEDPower(outer_sem[1], true);
+    }
+    case API_GREEN:{
+      setLEDPower(inner_sem[1], true);
+      setLEDPower(outer_sem[1], true);
+    }
+    case API_OFF:{
+      setLEDPower(inner_sem[1], true);
+      setLEDPower(outer_sem[1], true);
+    }
+  }
+}
 
+void receiveEvent(){
+  int *array = new int[4]
+  int i = 0;
+  while(1 < Wire.available()) { 
+    array[i++] = Wire.read();
+  }
+  array[i] = Wire.read();
+  processMessage(array);
 }
 
 void requestEvent(){
-  // Wire.write(/*resposta*/);
+  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number, status)
+  for(int i = 1; i < array[0]; i++){
+    Wire.write(array[i]);
+  }
+}
+
+void checkStatus() {
+
 }
 
 void setup(){

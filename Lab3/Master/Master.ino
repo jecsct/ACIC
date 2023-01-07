@@ -44,6 +44,12 @@ bool power;
 int timer = millis();
 int currentGreenSemaphore = 0;
 
+void blinkComLed(){
+    digitalWrite(COM_LED,HIGH);
+    delay(10);
+    digitalWrite(COM_LED,LOW);
+}
+
 
 void semaphores_setup(){
   for ( int i = 0 ; i < 3 ; i++){
@@ -71,34 +77,22 @@ void setLEDPower(int pinEntry, bool output){
   }
 }
 
-//Turns the power led on/and of depending on the power variable
-void powerLEDUpdate(){
-  if (power){
-    digitalWrite(COM_LED,HIGH);
-  }else{
-    digitalWrite(COM_LED,LOW);
-  }
-}
 
-void sendMessage(char value) {
-    Wire.beginTransmission(SLAVE_ADDR);
-    setLEDPower(COM_LED, true);
-    Wire.write(value);
-    setLEDPower(COM_LED,false);
-    Wire.endTransmission();
-}
 
-void sendMessage( char message, int entry_number) {
+void sendMessage(char message, int entry_number) {
+  blinkComLed();
   Wire.beginTransmission(entry_number);
-  Wire.write(message);
+  int *array = getApiMessage(message, 0, entry_number);
+  for (int i = 1; i < array[0]; i++){
+    Wire.write(message);
+  }
   Wire.endTransmission();
-  Wire.requestFrom(entry_number, 1);
+  Wire.requestFrom(entry_number, getMessageResponseSize(message));
   while(Wire.available()) {
     char c = Wire.read();
     Serial.print(c);
   }
 }
-
 // resets the state of the controller so that is ready to start from scratch
 void reset() {
 
@@ -113,17 +107,15 @@ void readPotentiometer() {
 void control() {
     if (millis() - timer > entry_timer) {
       controlSemaphores();
-
     }
 }
 
 void controlSemaphores() {
   int entry_number = 0;
-  while (entry_number < NUMBER_OF_ENTRIES) {
+  for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++){
     if (entry_number != currentGreenSemaphore) {
-      sendMessage(getApiRed(), entry_number);
+      sendMessage(API_RED, entry_number);
     }
-    entry_number++;
   }
   sendMessage(getApiGreen(), currentGreenSemaphore);
 }
@@ -138,6 +130,7 @@ void setup(){
   power=false;
   entry_timer=2000;
 }
+
 
 void loop(){
   if(power){
