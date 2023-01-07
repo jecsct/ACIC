@@ -1,8 +1,9 @@
 #include <Wire.h>
 
-//Adress of the slave arduino
-#define SLAVE_ADDR 8
-
+//Array with adresses of the slaves (roundabout entrys) 
+const int slave_addresses[] = {/*0, */1/*, 2, 3*/};
+//Number of roundabout entrys
+#define NUMBER_OF_ENTRIES 2
 
 //inner semaphore
 const int inner_sem[]= {5,6,7};
@@ -40,12 +41,13 @@ bool buttonPressed = false;
 #define MIN_TIMER 2
 //Maximum timer for semaphore phase
 #define MAX_TIMER 15
-//Number of outside semaphores
-#define NUMBER_OF_ENTRIES 2
 
-
-int timer = millis();
-int currentGreenSemaphore = 0;
+//Indicates whether or not it is the first time that the semaphores are being controlled after the system was turned on
+bool first_time = true;
+//Indicates when the entry to the roundbout changed
+unsigned long change_timer = millis();
+//Indicates the semaphore that shoukd be turned to green
+int currentGreenEntrySemaphore = 0;
 
 
 
@@ -88,13 +90,13 @@ void powerLEDUpdate(){
   }
 }
 
-void sendMessage(char value) {
-    Wire.beginTransmission(SLAVE_ADDR);
-    setLEDPower(COM_LED, true);
-    Wire.write(value);
-    setLEDPower(COM_LED,false);
-    Wire.endTransmission();
-}
+// void sendMessage(char value) {
+//     Wire.beginTransmission(SLAVE_ADDR);
+//     setLEDPower(COM_LED, true);
+//     Wire.write(value);
+//     setLEDPower(COM_LED,false);
+//     Wire.endTransmission();
+// }
 
 void sendMessage( char message, int entry_number) {
   Wire.beginTransmission(entry_number);
@@ -107,9 +109,11 @@ void sendMessage( char message, int entry_number) {
   }
 }
 
-// resets the state of the controller so that is ready to start from scratch
-void reset() {
-
+// 
+void resetGreenSemaphore() {
+  if ( currentGreenEntrySemaphore >= NUMBER_OF_ENTRIES){
+    currentGreenEntrySemaphore = 0
+  }
 }
 
 //Reads and converts the potenciomenter value to miliseconds
@@ -119,24 +123,38 @@ void readPotentiometer() {
 }
 
 void control() {
-    if (millis() - timer > entry_timer) {
-      controlSemaphores();
 
+    // current_timer = millis();
+
+    if (millis() - change_timer > entry_timer && first_time ) {
+      controlSemaphores();
+       first_time = false;
+      // current_timer = millis();
     }
 }
 
 void controlSemaphores() {
+  
   int entry_number = 0;
+  
   while (entry_number < NUMBER_OF_ENTRIES) {
-    if (entry_number != currentGreenSemaphore) {
-      sendMessage(getApiRed(), entry_number);
+  
+    if (entry_number != currentGreenEntrySemaphore) {
+      sendMessage(getApiRed(), slave_addresses[entry_number]);
     }
+
     entry_number++;
+
   }
-  sendMessage(getApiGreen(), currentGreenSemaphore);
+  
+  sendMessage(getApiGreen(), currentGreenEntrySemaphore);
+  
+  resetGreenSemaphore();
+
+  change_timer = millis();
 }
 
-
+//Sets the system up. Is run one time when the system is first runs
 void setup(){
   Serial.begin(9600);
   Wire.begin();
@@ -147,6 +165,7 @@ void setup(){
   entry_timer=2000;
 }
 
+//Checks if the power button was/is pressed
 void checkPowerButton () {
     
     // Button is being pressed
@@ -167,10 +186,15 @@ void loop(){
   checkPowerButton();
 
   if(power){
+    
     setLEDPower(POWER_LED, true);
     readPotentiometer();
+    
     control();
+
   }else{
+    
+    first_time = true;
     
     setLEDPower(POWER_LED, false);
 

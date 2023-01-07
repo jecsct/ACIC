@@ -41,3 +41,35 @@ int* getApiMessageResponse(int message, int entryNumber, int requestEntryNumber,
         }
     }
 }
+
+int getApiMaster() {
+    return API_MASTER;
+}
+
+int getApiRed() {
+    return API_RED;
+}
+
+int getApiGreen() {
+    return API_GREEN;
+}
+
+int getApiOff() {
+    return API_OFF;
+}
+
+int getApiPing() {
+    return API_PING;
+}
+
+int getApiAck() {
+    return API_ACK;
+}
+
+int getApiStatus() {
+    return API_STATUS;
+}
+
+int getApiTime() {
+    return API_TIME;
+}
