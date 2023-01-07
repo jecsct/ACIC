@@ -9,50 +9,35 @@
 
 
 int* getApiMessage(int message, int entryNumber, int targetEntryNumber) {
-    int arr[4] = {entryNumber, message, targetEntryNumber, entryNumber + message + targetEntryNumber};
-    return arr;
+    int *array = new int[4];
+    array[0] = entryNumber;
+    array[1] = message;
+    array[2] = targetEntryNumber;
+    array[3] = entryNumber + message + targetEntryNumber;
+    return array;
 }
 
 
 int* getApiMessageResponse(int message, int entryNumber, int requestEntryNumber, int status) {
     switch (message) {
         case API_PING:
-            int arr[5] = {entryNumber, API_STATUS, requestEntryNumber, status, entryNumber + status + API_STATUS};
-            return arr;  
+        {
+            int *array = new int[5];
+            array[0] = entryNumber;
+            array[1] = API_STATUS;
+            array[2] = requestEntryNumber;
+            array[3] = status;
+            array[4] = entryNumber + status + API_STATUS;
+            return array;
+        }
         default:
-            int arr[4] = {entryNumber, API_ACK, requestEntryNumber, entryNumber + API_ACK + entryNumber};
+        {
+            int *array = new int[4];
+            array[0] = entryNumber;
+            array[1] = API_ACK;
+            array[2] = requestEntryNumber;
+            array[3] = entryNumber + API_ACK + entryNumber;
+            return array;
+        }
     }
-}
-
-
-int getApiMaster() {
-    return API_MASTER;
-}
-
-int getApiRed() {
-    return API_RED;
-}
-
-int getApiGreen() {
-    return API_GREEN;
-}
-
-int getApiOff() {
-    return API_OFF;
-}
-
-int getApiPing() {
-    return API_PING;
-}
-
-int getApiAck() {
-    return API_ACK;
-}
-
-int getApiStatus() {
-    return API_STATUS;
-}
-
-int getApiTime() {
-    return API_TIME;
 }
