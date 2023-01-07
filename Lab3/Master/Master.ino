@@ -30,8 +30,11 @@ int potentiometer = 0;
 int entry_timer;
 
 
+#define POWER_BUTTON 2
 //Defines if system is on/off
 bool power;
+//Indicates if button has pressed or not
+bool buttonPressed = false;
 
 //Minimum timer for semaphore phase
 #define MIN_TIMER 2
@@ -45,6 +48,7 @@ int timer = millis();
 int currentGreenSemaphore = 0;
 
 
+
 void semaphores_setup(){
   for ( int i = 0 ; i < 3 ; i++){
     pinMode(inner_sem[i], OUTPUT); 
@@ -56,11 +60,15 @@ void semaphores_setup(){
     pinMode(ped_sem[i], OUTPUT); 
   }
   pinMode(PED_BUTTON, INPUT); 
-
+  pinMode(POWER_BUTTON,INPUT);
 
   pinMode(POWER_LED, OUTPUT); 
   pinMode(COM_LED, OUTPUT); 
 
+}
+
+void turnOnOff(){
+  power = !power;
 }
 
 void setLEDPower(int pinEntry, bool output){
@@ -139,7 +147,25 @@ void setup(){
   entry_timer=2000;
 }
 
+void checkPowerButton () {
+    
+    // Button is being pressed
+    while (digitalRead(POWER_BUTTON) == HIGH) {      
+      buttonPressed = true;
+    }
+
+    // Button has been pressed
+    if (buttonPressed) {
+      turnOnOff();
+      buttonPressed = false;
+    }
+
+}
+
 void loop(){
+
+  checkPowerButton();
+
   if(power){
     setLEDPower(POWER_LED, true);
     readPotentiometer();
@@ -156,6 +182,9 @@ void loop(){
       setLEDPower(inner_sem[1], true);
       setLEDPower(outer_sem[1], true);
       current_time = millis();
+
+      checkPowerButton();
+
     }
 
     start_time = millis();
@@ -165,7 +194,12 @@ void loop(){
       setLEDPower(inner_sem[1], false);
       setLEDPower(outer_sem[1], false);
       current_time = millis();
+
+      checkPowerButton();
+
     }
 
   }
+
+
 }
