@@ -3,7 +3,7 @@
 //Array with adresses of the slaves (roundabout entrys) 
 const int slave_addresses[] = {/*0, */1/*, 2, 3*/};
 //Number of roundabout entrys
-#define NUMBER_OF_ENTRIES 2
+#define NUMBER_OF_ENTRIES 1
 
 //inner semaphore
 const int inner_sem[]= {5,6,7};
@@ -64,7 +64,7 @@ void semaphores_setup(){
   for ( int i = 0 ; i < 3 ; i++){
     pinMode(outer_sem[i], OUTPUT); 
   }
-  for ( int i = 0 ; i < 3 ; i++){
+  for ( int i = 0 ; i < 2 ; i++){
     pinMode(ped_sem[i], OUTPUT); 
   }
   pinMode(PED_BUTTON, INPUT); 
@@ -91,6 +91,7 @@ void setLEDPower(int pinEntry, bool output){
 
 void sendMessage(char message, int entry_number) {
   blinkComLed();
+  Serial.println("ENVIEI");
   Wire.beginTransmission(entry_number);
   int *array = getApiMessage(message, 0, entry_number);
   for (int i = 1; i < array[0]; i++){
@@ -100,7 +101,6 @@ void sendMessage(char message, int entry_number) {
   Wire.requestFrom(entry_number, getMessageResponseSize(message));
   while(Wire.available()) {
     char c = Wire.read();
-    Serial.print(c);
   }
 }
 
@@ -121,7 +121,7 @@ void control() {
 
     // current_timer = millis();
 
-    if (millis() - change_timer > entry_timer && first_time ) {
+    if (millis() - change_timer > entry_timer || first_time ) {
       controlSemaphores();
        first_time = false;
       // current_timer = millis();
@@ -130,14 +130,13 @@ void control() {
 
 void controlSemaphores() {
   
-  int entry_number = 0;
   for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++){
     if (entry_number != currentGreenEntrySemaphore) {
-      sendMessage(getApiRed(), entry_number);
+      sendMessage(getApiRed(), slave_addresses[entry_number]);
     }
   }
   
-  sendMessage(getApiGreen(), currentGreenEntrySemaphore);
+  sendMessage(getApiGreen(), slave_addresses[currentGreenEntrySemaphore]);
   
   resetGreenSemaphore();
 
@@ -173,47 +172,63 @@ void checkPowerButton () {
 
 void loop(){
 
-  checkPowerButton();
 
-  if(power){
-    
-    setLEDPower(POWER_LED, true);
-    readPotentiometer();
-    
-    control();
+  while ( true ){
 
-  }else{
-    
-    first_time = true;
-    
-    setLEDPower(POWER_LED, false);
+    sendMessage(0, 1);
 
 
-    unsigned long start_time = millis();
-    unsigned long current_time = millis();
+    delay(5000);
 
-    while ( current_time - start_time < off_blink_timer && !power ){
-      setLEDPower(inner_sem[1], true);
-      setLEDPower(outer_sem[1], true);
-      current_time = millis();
-
-      checkPowerButton();
-
-    }
-
-    start_time = millis();
-    current_time = millis();
-
-    while ( current_time - start_time < off_blink_timer && !power ){
-      setLEDPower(inner_sem[1], false);
-      setLEDPower(outer_sem[1], false);
-      current_time = millis();
-
-      checkPowerButton();
-
-    }
-
+    sendMessage(1,1);
+  
+    delay(5000);
   }
+
+  // checkPowerButton();
+
+  // if(power){
+    
+  //   setLEDPower(POWER_LED, true);
+  //   readPotentiometer();
+    
+  //   control();
+
+  // }else{
+    
+  //   first_time = true;
+    
+  //   setLEDPower(POWER_LED, false);
+
+  // for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++){
+  //     sendMessage(getApiOff(), slave_addresses[entry_number]);
+  // }
+
+  //   unsigned long start_time = millis();
+  //   unsigned long current_time = millis();
+
+  //   while ( current_time - start_time < off_blink_timer && !power ){
+  //     setLEDPower(inner_sem[1], true);
+  //     setLEDPower(outer_sem[1], true);
+  //     current_time = millis();
+
+  //     checkPowerButton();
+
+  //   }
+
+  //   start_time = millis();
+  //   current_time = millis();
+
+  //   while ( current_time - start_time < off_blink_timer && !power ){
+  //     setLEDPower(inner_sem[1], false);
+  //     setLEDPower(outer_sem[1], false);
+  //     current_time = millis();
+
+  //     checkPowerButton();
+
+  //   }
+
+  // }
 
 
 }
