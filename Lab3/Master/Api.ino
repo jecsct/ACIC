@@ -7,6 +7,7 @@
 #define API_STATUS 5
 #define API_TIME 6
 
+
 int* getApiMessage(int message, int entryNumber, int targetEntryNumber) {
     int *array = new int[4];
     array[0] = entryNumber;
@@ -15,6 +16,7 @@ int* getApiMessage(int message, int entryNumber, int targetEntryNumber) {
     array[3] = entryNumber + message + targetEntryNumber;
     return array;
 }
+
 
 int* getApiMessageResponse(int message, int entryNumber, int requestEntryNumber, int status) {
     switch (message) {
