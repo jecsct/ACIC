@@ -107,25 +107,25 @@ void updateSemaphore(int *array){
   received_message_entry_number = array[1];
   received_message = array[2];
 
-  Serial.println(received_message);
+  //Serial.println(received_message);
 
   switch(received_message){
     case 0:{ // API_RED
       //power=true;
-      Serial.println("TOU REDZAO");
+      //Serial.println("TOU REDZAO");
       state = 0;
       break;
     }
     case 1:{ //API_GREEN
       //power=true;
-      Serial.println("TOU GREEN");
+      //Serial.println("TOU GREEN");
       state = 1;
       break;
     }
     case 2:{ //API_OFF
       state = 2;
       powerOff();
-      Serial.println("OFF");
+      //Serial.println("OFF");
       break;
     }
   }
@@ -140,8 +140,8 @@ void setLEDPower(int pinEntry, bool output){
 }
 
 void processResponse(int *array) {
-  Serial.print(">>>>>>>>>> ");
-  Serial.println(array[0]);
+  //Serial.print(">>>>>>>>>> ");
+  //Serial.println(array[0]);
   if (array[0] == getApiStatus()) {
     int *info = intToBin(array[3]);
   }
@@ -161,7 +161,7 @@ int intToBin(int num) {
 void sendMessage(char message, int entry_number) {
   if (entry_number == 0)
   {
-    Serial.println("ENVIEI PARA MIM"); 
+    //Serial.println("ENVIEI PARA MIM"); 
     int *array = getApiMessage(message, CONTROLLER_ENTRY, entry_number);
     blinkComLed();
     updateSemaphore(array);
@@ -169,7 +169,7 @@ void sendMessage(char message, int entry_number) {
   else 
   {
     
-    Serial.println("ENVIEI PARA OUTRO"); 
+    //Serial.println("ENVIEI PARA OUTRO"); 
 
     Wire.beginTransmission(entry_number);
     int *array = getApiMessage(message, CONTROLLER_ENTRY, entry_number);
@@ -181,7 +181,7 @@ void sendMessage(char message, int entry_number) {
    
     Wire.endTransmission();
     Wire.requestFrom(entry_number, getMessageResponseSize(message));
-      Serial.println("Comecei a receber");
+      //Serial.println("Comecei a receber");
       int idx = -1;
       int *response_array;
     while(Wire.available()) {
@@ -194,7 +194,7 @@ void sendMessage(char message, int entry_number) {
         response_array[idx] = c;        
       }
       idx++;
-      Serial.println(c);
+      //Serial.println(c);
     }
     processResponse(response_array);
 
