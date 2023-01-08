@@ -112,7 +112,25 @@ void requestEvent(){
   }
 }
 
+//[ pedestRedFailing, pedestYellowFailing, pedestGreenFailing, redFailing, yellowFailing, greenFailing, timerActivated, 0]
 void checkStatus() {
+  for(int i = 1; i < 2; i++){
+    // int s = digitalRead(ped_sem[i]);
+    int s = 0;
+    status[i] = s;
+  }
+
+   for(int i = 1; i < 3; i++){
+    // int s = digitalRead(inner_sem[i]);
+    int s = 0;
+    status[i+2] = s;
+  }
+}
+
+void checkPedestrianButton(){
+  if digitalRead(POWER_BUTTON) == HIGH) {
+    status[6] = 1;
+  }
 
 }
 
@@ -127,7 +145,7 @@ void setup(){
 void loop(){
 
   if (power){
-
+    checkPedestrianButton();
     switch(state){
     case 0:{ // API_RED
 
@@ -148,6 +166,7 @@ void loop(){
       setLEDPower(ped_sem[0], false);  //ped red off
       setLEDPower(ped_sem[1], true);   // ped green on
 
+      status[6] = 0;
 
       state = 10;
       break;
