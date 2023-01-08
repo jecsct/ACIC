@@ -139,15 +139,32 @@ void setLEDPower(int pinEntry, bool output){
   }
 }
 
-void processResponse(int *array) {
-  //Serial.print(">>>>>>>>>> ");
-  //Serial.println(array[0]);
-  if (array[0] == getApiStatus()) {
-    int *info = intToBin(array[3]);
-  }
+void handleLedError(){
 
 }
 
+void handleTimerActivated(){
+  if !(timer_activated){
+    timer_activated = true;
+    change_timer = ((entry_timer - (millis() - change_timer)) / 2) + change_timer
+  }
+}
+
+void processResponse(int *array) {
+  Serial.print(">>>>>>>>>> ");
+  Serial.println(array[0]);
+
+  if (array[0] == getApiStatus()) {
+    int *info = intToBin(array[3]);
+    for (int i = 0; i < 5; i++)
+      if (info[i] == 1){
+        handleLedError()
+      }
+    if (array[6] == 1){
+      handleTimerActivated();
+    }
+  }
+}
 
 
 int intToBin(int num) {
@@ -222,6 +239,7 @@ void control() {
     if (millis() - change_timer > entry_timer || first_time ) {
       controlSemaphores();
        first_time = false;
+       timer_activated = false;
       // current_timer = millis();
     }
 }
