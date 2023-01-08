@@ -70,7 +70,6 @@ void processMessage(int *array){
   received_message_entry_number = array[0];
   received_message = array[1];
 
-  Serial.println(received_message);
 
   switch(received_message){
     case 0:{ // API_RED
@@ -103,13 +102,21 @@ void receiveEvent(){
   }
   array[i] = Wire.read();
   processMessage(array);
+  free(array);
 }
 
 void requestEvent(){
-  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number, binToInt(status));
+  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,255);
   Serial.println("Comecei a enviar");
+  Serial.print("received_message ");
+  Serial.println(received_message);
+  Serial.print("receive message entry number ");
+  Serial.println(received_message_entry_number);
+  Serial.print("response size ");
+  Serial.println(array[0]);
+
   for(int i = 1; i < array[0]; i++){
-  Serial.println(array[i]);
+    Serial.println(array[i]);
     Wire.write(array[i]);
   }
   Serial.println("Acabei de enviar");

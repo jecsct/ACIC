@@ -57,6 +57,9 @@ int received_message = 0;
 int received_message_entry_number = 0;
 
 
+bool timer_activated;
+
+
 void blinkComLed(){
     digitalWrite(COM_LED,HIGH);
     delay(10);
@@ -144,9 +147,11 @@ void handleLedError(){
 }
 
 void handleTimerActivated(){
-  if !(timer_activated){
+  if (!timer_activated){
+    Serial.println("timer received");
+    
     timer_activated = true;
-    change_timer = ((entry_timer - (millis() - change_timer)) / 2) + change_timer
+    change_timer = change_timer - ((entry_timer - (millis() - change_timer)) / 2);
   }
 }
 
@@ -155,12 +160,16 @@ void processResponse(int *array) {
   Serial.println(array[0]);
 
   if (array[0] == getApiStatus()) {
-    int *info = intToBin(array[3]);
-    for (int i = 0; i < 5; i++)
+    int info[] = {1,1,1,1,1,1,1,1};
+    //int *info = intToBin(array[2]);
+    for (int i = 0; i < 5; i++){
       if (info[i] == 1){
-        handleLedError()
+        handleLedError();
       }
-    if (array[6] == 1){
+    }
+    Serial.print("timer: ");
+    Serial.println(info[6]);
+    if (info[6] == 1){
       handleTimerActivated();
     }
   }
@@ -176,7 +185,7 @@ int intToBin(int num) {
 }
 
 void sendMessage(char message, int entry_number) {
-  if (entry_number == 0)
+  if (entry_number == 0 && message != getApiStatus())
   {
     //Serial.println("ENVIEI PARA MIM"); 
     int *array = getApiMessage(message, CONTROLLER_ENTRY, entry_number);
@@ -193,7 +202,7 @@ void sendMessage(char message, int entry_number) {
    
     for (int i = 1; i < array[0]; i++){
       blinkComLed();
-      Wire.write(message);
+      Wire.write(array[i]);
     }
    
     Wire.endTransmission();
@@ -204,6 +213,7 @@ void sendMessage(char message, int entry_number) {
     while(Wire.available()) {
       blinkComLed();
       int c = Wire.read();
+      Serial.println(c);
       if (idx == -1) {
         response_array = new int[c];
       } 
@@ -214,8 +224,7 @@ void sendMessage(char message, int entry_number) {
       //Serial.println(c);
     }
     processResponse(response_array);
-
-  
+    free(response_array);
   }    
 }
 
@@ -241,6 +250,9 @@ void control() {
        first_time = false;
        timer_activated = false;
       // current_timer = millis();
+    }
+     for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++){
+      sendMessage(getApiPing(), slave_addresses[entry_number]);
     }
 }
 
@@ -311,14 +323,16 @@ void loop(){
 
   checkPowerButton();
 
+  Serial.print("TIMER");
+  Serial.println(entry_timer);
+
 
   if(power){
-    
+    Serial.println("ON");
 
     setLEDPower(POWER_LED, true);
     readPotentiometer();
     
-    Serial.println(entry_timer);
 
     control();
 
@@ -377,7 +391,7 @@ void loop(){
   }
 
   }else{
-    
+    Serial.println("OFF");
     
     first_time = true;
     
