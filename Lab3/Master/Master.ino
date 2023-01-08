@@ -139,6 +139,24 @@ void setLEDPower(int pinEntry, bool output){
   }
 }
 
+void processResponse(int *array) {
+  Serial.print(">>>>>>>>>> ");
+  Serial.println(array[0]);
+  if (array[0] == getApiStatus()) {
+    int *info = intToBin(array[3]);
+  }
+
+}
+
+
+
+int intToBin(int num) {
+  int array[8];
+  for (int i = 0; i < 8; i++) {
+    array[i] = num % ((int) pow(2, i));
+  }
+  return array;
+}
 
 void sendMessage(char message, int entry_number) {
   if (entry_number == 0)
@@ -163,10 +181,23 @@ void sendMessage(char message, int entry_number) {
    
     Wire.endTransmission();
     Wire.requestFrom(entry_number, getMessageResponseSize(message));
+      Serial.println("Comecei a receber");
+      int idx = -1;
+      int *response_array;
     while(Wire.available()) {
       blinkComLed();
-      char c = Wire.read();
+      int c = Wire.read();
+      if (idx == -1) {
+        response_array = new int[c];
+      } 
+      else {
+        response_array[idx] = c;        
+      }
+      idx++;
+      Serial.println(c);
     }
+    processResponse(response_array);
+
   
   }    
 }
@@ -239,6 +270,12 @@ void checkPowerButton () {
 
 }
 
+void sendPing(){
+  for(int i=0; i<NUMBER_OF_ENTRIES; i++){
+    sendMessage(getApiPing(), slave_addresses[i]);
+  }
+
+}
 void loop(){
 
 
@@ -263,6 +300,8 @@ void loop(){
     setLEDPower(POWER_LED, true);
     readPotentiometer();
     
+    Serial.println(entry_timer);
+
     control();
 
     switch(state){

@@ -25,7 +25,7 @@ const int off_blink_timer=500;
 int received_message = 0;
 int received_message_entry_number = 0;
 
-int status = 0;
+int *status = new int[7];
 
 
 //Indicates the mode in which the system is working on
@@ -106,10 +106,21 @@ void receiveEvent(){
 }
 
 void requestEvent(){
-  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number, status);
+  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number, binToInt(status));
+  Serial.println("Comecei a enviar");
   for(int i = 1; i < array[0]; i++){
+  Serial.println(array[i]);
     Wire.write(array[i]);
   }
+  Serial.println("Acabei de enviar");
+}
+
+int binToInt(int *array) {
+  int res = 0;
+  for (int i = 0; i < 8; i++) {
+    res += array[i] * pow(2, i);
+  }
+  return res;
 }
 
 //[ pedestRedFailing, pedestYellowFailing, pedestGreenFailing, redFailing, yellowFailing, greenFailing, timerActivated, 0]
@@ -128,7 +139,7 @@ void checkStatus() {
 }
 
 void checkPedestrianButton(){
-  if digitalRead(POWER_BUTTON) == HIGH) {
+  if (digitalRead(PED_BUTTON) == HIGH) {
     status[6] = 1;
   }
 
