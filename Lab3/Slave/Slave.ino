@@ -14,6 +14,8 @@ const int inner_sem[]= {8,9,10};
 const int ped_sem[]= {11,12};
 //Pin for the pedestrian button
 #define PED_BUTTON 13
+//Indicates if pedestrian clicked the pedestrian button this cycle
+bool pedestrian_clicked = false;
 
 //Defines if system is on or off 
 bool power = false;
@@ -28,8 +30,6 @@ int status = 0;
 
 //Indicates the mode in which the system is working on
 int state = 2; //API OFF
-
-
 
 
 void semaphores_setup(){
@@ -145,8 +145,8 @@ void loop(){
       setLEDPower(outer_sem[0], true);  // outer red on
       setLEDPower(inner_sem[2], true); // inner green on
 
-      setLEDPower(ped_sem[0], false);  //ped red off
-      setLEDPower(ped_sem[1], true);   // ped green on
+      setLEDPower(ped_sem[1], false);  //ped red off
+      setLEDPower(ped_sem[0], true);   // ped green on
 
 
       state = 10;
@@ -167,8 +167,8 @@ void loop(){
       setLEDPower(outer_sem[2], true);  // outer red on
       setLEDPower(inner_sem[0], true); // inner green on
 
-      setLEDPower(ped_sem[1], false);  //ped red off
-      setLEDPower(ped_sem[0], true);   // ped green on
+      setLEDPower(ped_sem[0], false);  //ped red off
+      setLEDPower(ped_sem[1], true);   // ped green on
 
       state = 10;
       break;
