@@ -1,0 +1,52 @@
+// #define SLAVE_ADDR  8;
+#define RED_LED_PIN  11
+#define GREEN_LED_PIN  12
+#define YELLOW_LED_PIN  13
+
+float potentiometerTime = 0.2;
+int temperature = 20;
+int intensity = 240;
+
+int prevTime;
+
+void controlRed() {
+    if (temperature > 26) {
+        digitalWrite(YELLOW_LED_PIN, HIGH);
+    } else {
+        digitalWrite(YELLOW_LED_PIN, LOW);
+    }
+}
+
+void controlGreen() {
+    unsigned long currentTime = millis();
+    if (currentTime - prevTime > potentiometerTime) {
+        if (digitalRead(GREEN_LED_PIN) == HIGH) {
+            digitalWrite(GREEN_LED_PIN, LOW);
+        } else {    
+            digitalWrite(GREEN_LED_PIN, HIGH);
+        }
+        prevTime = currentTime;
+    }
+}
+
+void controlYellow() {
+    analogWrite(YELLOW_LED_PIN, intensity);
+}
+
+void setup() {
+  // put your setup code here, to run once:
+    // Wire.begin(SLAVE_ADDR);
+    // Wire.onReceive(callbackFunction);
+    pinMode(RED_LED_PIN, OUTPUT);
+    pinMode(GREEN_LED_PIN, OUTPUT);
+    pinMode(YELLOW_LED_PIN, OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+    controlRed();
+    controlGreen();
+    controlYellow();
+
+}
