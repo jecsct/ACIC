@@ -60,34 +60,68 @@ int received_message_entry_number = 0;
 bool timer_activated;
 
 
-void blinkComLed(){
-    digitalWrite(COM_LED,HIGH);
-    delay(10);
-    digitalWrite(COM_LED,LOW);
-}
-
-
-void semaphores_setup(){
-  for ( int i = 0 ; i < 3 ; i++){
-    pinMode(inner_sem[i], OUTPUT); 
-  }
-  for ( int i = 0 ; i < 3 ; i++){
-    pinMode(outer_sem[i], OUTPUT); 
-  }
-  for ( int i = 0 ; i < 2 ; i++){
-    pinMode(ped_sem[i], OUTPUT); 
-  }
-
-  pinMode(PED_BUTTON, INPUT); 
-  pinMode(POWER_BUTTON,INPUT);
-
-  pinMode(POWER_LED, OUTPUT); 
-  pinMode(COM_LED, OUTPUT); 
-
-}
 
 void turnOnOff(){
   power = !power;
+}
+
+
+int[] getAllSemaphores()
+{
+  int []returnArray = new int[8];
+  int fill_indice = 0;
+
+  for ( int i = 0 ; i < 3 ; i++ )
+  {
+    returnArray[fill_indice] = outer_sem[i];
+    fill_indice++;
+  }
+
+  for ( int i = 0 ; i < 3 ; i++ )
+  {
+    returnArray[fill_indice] = inner_sem[i];
+    fill_indice++;
+  }
+
+  for ( int i = 0 ; i < 2 ; i++ )
+  {
+    returnArray[fill_indice] = ped_sem[i];
+    fill_indice++;
+  }
+
+  free(fill_indice);
+
+  return { returnArray, 8}
+}
+
+// void blinkComLed(){
+//     digitalWrite(COM_LED,HIGH);
+//     delay(10);
+//     digitalWrite(COM_LED,LOW);
+// }
+
+
+void semaphores_setup(){
+  // for ( int i = 0 ; i < 3 ; i++){
+  //   pinMode(inner_sem[i], OUTPUT); 
+  // }
+  // for ( int i = 0 ; i < 3 ; i++){
+  //   pinMode(outer_sem[i], OUTPUT); 
+  // }
+  // for ( int i = 0 ; i < 2 ; i++){
+  //   pinMode(ped_sem[i], OUTPUT); 
+  // }
+
+  pins_quantity = getLEDPins(outer_sem, inner_sem, ped_sem, POWER_LED, COM_LED);
+  setOutputSemaphores(pins_quantity[0], pins_quantity[1]);
+  setInputSemaphores({PED_BUTTON, POWER_BUTTON}, 2)
+
+  // pinMode(PED_BUTTON, INPUT); 
+  // pinMode(POWER_BUTTON,INPUT);
+
+  // pinMode(POWER_LED, OUTPUT); 
+  // pinMode(COM_LED, OUTPUT); 
+
 }
 
 
@@ -95,15 +129,21 @@ void powerOff(){
 
   power = false;
 
-  for ( int i = 0 ; i < 3 ; i++){
-    setLEDPower(inner_sem[i], false); 
-  }
-  for ( int i = 0 ; i < 3 ; i++){
-    setLEDPower(outer_sem[i], false); 
-  }
-  for ( int i = 0 ; i < 2 ; i++){
-    setLEDPower(ped_sem[i], false); 
-  }
+  int []tempArray = getAllSemaphores();
+
+  powerOff(tempArray[0, tempArray[1]);
+
+  free(tempArray);
+
+  // for ( int i = 0 ; i < 3 ; i++){
+  //   setLEDPower(inner_sem[i], false); 
+  // }
+  // for ( int i = 0 ; i < 3 ; i++){
+  //   setLEDPower(outer_sem[i], false); 
+  // }
+  // for ( int i = 0 ; i < 2 ; i++){
+  //   setLEDPower(ped_sem[i], false); 
+  // }
 }
 
 void updateSemaphore(int *array){
@@ -134,13 +174,13 @@ void updateSemaphore(int *array){
   }
 }
 
-void setLEDPower(int pinEntry, bool output){
-  if (output){
-    digitalWrite(pinEntry,HIGH);
-  }else{
-    digitalWrite(pinEntry,LOW);
-  }
-}
+// void setLEDPower(int pinEntry, bool output){
+//   if (output){
+//     digitalWrite(pinEntry,HIGH);
+//   }else{
+//     digitalWrite(pinEntry,LOW);
+//   }
+// }
 
 void handleLedError(){
 
@@ -277,8 +317,6 @@ void controlSemaphores() {
 void setup(){
   Serial.begin(9600);
   Wire.begin();
-  // pinMode(POWER_LED, OUTPUT); 
-  // pinMode(COM_LED, OUTPUT);
   semaphores_setup(); 
   power=false;
   entry_timer=2000;
@@ -337,49 +375,52 @@ void loop(){
     control();
 
     switch(state){
-    case 0:{ // API_RED
+      case 0:{ // API_RED
 
-      setLEDPower(outer_sem[2], false); // outer green off
-      setLEDPower(inner_sem[0], false); // inner red off
+        // setLEDPower(outer_sem[2], false); // outer green off
+        // setLEDPower(inner_sem[0], false); // inner red off
 
-      setLEDPower(outer_sem[1], true);  // outer yellow on
-      setLEDPower(inner_sem[1], true);  // inner yellow on
+        // setLEDPower(outer_sem[1], true);  // outer yellow on
+        // setLEDPower(inner_sem[1], true);  // inner yellow on
 
-      delay(500);
-      
-      setLEDPower(inner_sem[1], false); // inner yellow off
-      setLEDPower(outer_sem[1], false); // outer yellow off
-      
-      setLEDPower(outer_sem[0], true);  // outer red on
-      setLEDPower(inner_sem[2], true); // inner green on
+        // delay(500);
+        
+        // setLEDPower(inner_sem[1], false); // inner yellow off
+        // setLEDPower(outer_sem[1], false); // outer yellow off
+        
+        // setLEDPower(outer_sem[0], true);  // outer red on
+        // setLEDPower(inner_sem[2], true); // inner green on
 
-      setLEDPower(ped_sem[0], false);  //ped red off
-      setLEDPower(ped_sem[1], true);   // ped green on
+        // setLEDPower(ped_sem[0], false);  //ped red off
+        // setLEDPower(ped_sem[1], true);   // ped green on
 
+        turnGREEN(outer_sem, inner_sem, ped_sem);
 
-      state = 10;
-      break;
-    }
-    case 1:{ //API_GREEN
-      setLEDPower(outer_sem[0], false); // outer green off
-      setLEDPower(inner_sem[2], false); // inner red off
+        state = 10;
+        break;
+      }
+      case 1:{ //API_GREEN
+        // setLEDPower(outer_sem[0], false); // outer green off
+        // setLEDPower(inner_sem[2], false); // inner red off
 
-      setLEDPower(outer_sem[1], true);  // outer yellow on
-      setLEDPower(inner_sem[1], true);  // inner yellow on
-      
-      delay(500);
+        // setLEDPower(outer_sem[1], true);  // outer yellow on
+        // setLEDPower(inner_sem[1], true);  // inner yellow on
+        
+        // delay(500);
 
-      setLEDPower(inner_sem[1], false); // inner yellow off
-      setLEDPower(outer_sem[1], false); // outer yellow off
-      
-      setLEDPower(outer_sem[2], true);  // outer red on
-      setLEDPower(inner_sem[0], true); // inner green on
+        // setLEDPower(inner_sem[1], false); // inner yellow off
+        // setLEDPower(outer_sem[1], false); // outer yellow off
+        
+        // setLEDPower(outer_sem[2], true);  // outer red on
+        // setLEDPower(inner_sem[0], true); // inner green on
 
-      setLEDPower(ped_sem[1], false);  //ped red off
-      setLEDPower(ped_sem[0], true);   // ped green on
+        // setLEDPower(ped_sem[1], false);  //ped red off
+        // setLEDPower(ped_sem[0], true);   // ped green on
 
-      state = 10;
-      break;
+        turnRED(outer_sem, inner_sem, ped_sem);
+
+        state = 10;
+        break;
     }
     // case 2:{ //API_OFF
 
