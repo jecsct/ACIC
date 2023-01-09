@@ -160,8 +160,8 @@ void processResponse(int *array) {
   Serial.println(array[0]);
 
   if (array[0] == getApiStatus()) {
-    int info[] = {1,1,1,1,1,1,1,1};
-    //int *info = intToBin(array[2]);
+    //int info[] = {1,1,1,1,1,1,1,1};
+    int *info = intToBin(array[2]);
     for (int i = 0; i < 5; i++){
       if (info[i] == 1){
         handleLedError();
@@ -176,10 +176,12 @@ void processResponse(int *array) {
 }
 
 
-int intToBin(int num) {
-  int array[8];
-  for (int i = 0; i < 8; i++) {
-    array[i] = num % ((int) pow(2, i));
+// Converts a decimal integer to a binary array
+int *intToBin(int num) {
+  int *array = new int[8]; 
+  for (int i = 7; num > 0; i--) {
+    array[i] = num % 2;
+    num = num / 2;
   }
   return array;
 }

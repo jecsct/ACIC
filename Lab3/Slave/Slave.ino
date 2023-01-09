@@ -122,19 +122,21 @@ void requestEvent(){
   Serial.println("Acabei de enviar");
 }
 
+// Converts a binary array to a decimal integer
 int binToInt(int *array) {
   int res = 0;
   for (int i = 0; i < 8; i++) {
-    res += array[i] * pow(2, i);
+    res += array[i] * pow(2, 7-i);
   }
   return res;
 }
 
+
 //[ pedestRedFailing, pedestYellowFailing, pedestGreenFailing, redFailing, yellowFailing, greenFailing, timerActivated, 0]
 void checkStatus() {
   for(int i = 1; i < 2; i++){
-    // int s = digitalRead(ped_sem[i]);
-    int s = 0;
+    int s = digitalRead(ped_sem[i]);
+    //int s = 0;
     status[i] = s;
   }
 
