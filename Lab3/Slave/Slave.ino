@@ -102,24 +102,26 @@ void receiveEvent(){
   }
   array[i] = Wire.read();
   processMessage(array);
-  free(array);
+  // free(array);
+  delete[] array;
 }
 
 void requestEvent(){
   int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,255);
-  Serial.println("Comecei a enviar");
-  Serial.print("received_message ");
-  Serial.println(received_message);
-  Serial.print("receive message entry number ");
-  Serial.println(received_message_entry_number);
-  Serial.print("response size ");
-  Serial.println(array[0]);
+  // Serial.println("Comecei a enviar");
+  // Serial.print("received_message ");
+  // Serial.println(received_message);
+  // Serial.print("receive message entry number ");
+  // Serial.println(received_message_entry_number);
+  // Serial.print("response size ");
+  // Serial.println(array[0]);
 
   for(int i = 1; i < array[0]; i++){
     Serial.println(array[i]);
     Wire.write(array[i]);
   }
   Serial.println("Acabei de enviar");
+  delete[] array;
 }
 
 // Converts a binary array to a decimal integer
@@ -132,7 +134,7 @@ int binToInt(int *array) {
 }
 
 
-//[ pedestRedFailing, pedestYellowFailing, pedestGreenFailing, redFailing, yellowFailing, greenFailing, timerActivated, 0]
+// pedestRedFailing, pedestYellowFailing, pedestGreenFailing, redFailing, yellowFailing, greenFailing, timerActivated, 0]
 void checkStatus() {
   for(int i = 1; i < 2; i++){
     int s = digitalRead(ped_sem[i]);
@@ -148,7 +150,10 @@ void checkStatus() {
 }
 
 void checkPedestrianButton(){
-  if (digitalRead(PED_BUTTON) == HIGH) {
+  int value = digitalRead(PED_BUTTON);
+  if ( value == HIGH) {
+  Serial.print("BBBBBBBBBBBBBBB: ");
+  Serial.println(value);
     status[6] = 1;
   }
 

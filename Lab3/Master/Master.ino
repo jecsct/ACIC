@@ -156,12 +156,15 @@ void handleTimerActivated(){
 }
 
 void processResponse(int *array) {
-  Serial.print(">>>>>>>>>> ");
-  Serial.println(array[0]);
+  //Serial.print(">>>>>>>>>> ");
+  //Serial.println(array[0]);
+
 
   if (array[0] == getApiStatus()) {
     //int info[] = {1,1,1,1,1,1,1,1};
-    int *info = intToBin(array[2]);
+    
+    int* info = new int[8];
+    intToBin(array[2], info);
     for (int i = 0; i < 5; i++){
       if (info[i] == 1){
         handleLedError();
@@ -172,18 +175,18 @@ void processResponse(int *array) {
     if (info[6] == 1){
       handleTimerActivated();
     }
+    delete[] info;
   }
 }
 
 
 // Converts a decimal integer to a binary array
-int *intToBin(int num) {
-  int *array = new int[8]; 
+void *intToBin(int num, int* info) {
   for (int i = 7; num > 0; i--) {
-    array[i] = num % 2;
+    info[i] = num % 2;
     num = num / 2;
   }
-  return array;
+  
 }
 
 void sendMessage(char message, int entry_number) {
@@ -193,6 +196,7 @@ void sendMessage(char message, int entry_number) {
     int *array = getApiMessage(message, CONTROLLER_ENTRY, entry_number);
     blinkComLed();
     updateSemaphore(array);
+    delete[] array;
   }
   else 
   {
@@ -215,7 +219,7 @@ void sendMessage(char message, int entry_number) {
     while(Wire.available()) {
       blinkComLed();
       int c = Wire.read();
-      Serial.println(c);
+     // Serial.println(c);
       if (idx == -1) {
         response_array = new int[c];
       } 
@@ -223,10 +227,13 @@ void sendMessage(char message, int entry_number) {
         response_array[idx] = c;        
       }
       idx++;
+
       //Serial.println(c);
     }
     processResponse(response_array);
-    free(response_array);
+    // free(response_array);
+    delete[] response_array;
+    delete[] array;
   }    
 }
 
