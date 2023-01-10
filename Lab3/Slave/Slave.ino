@@ -25,7 +25,7 @@ const int off_blink_timer=500;
 int received_message = 0;
 int received_message_entry_number = 0;
 
-int *status = new int[7];
+int status[] = {0,0,0,0,0,0,0,0};
 
 
 //Indicates the mode in which the system is working on
@@ -107,7 +107,19 @@ void receiveEvent(){
 }
 
 void requestEvent(){
-  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,255);
+  Serial.println("//////////////////////");
+  Serial.println(status[0]);
+  Serial.println(status[1]);
+  Serial.println(status[2]);
+  Serial.println(status[3]);
+  Serial.println(status[4]);
+  Serial.println(status[5]);
+  Serial.println(status[6]);
+  Serial.println(status[7]);
+  Serial.println("//////");
+  
+
+  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,binToInt(status));
   // Serial.println("Comecei a enviar");
   // Serial.print("received_message ");
   // Serial.println(received_message);
@@ -117,7 +129,7 @@ void requestEvent(){
   // Serial.println(array[0]);
 
   for(int i = 1; i < array[0]; i++){
-    Serial.println(array[i]);
+    //Serial.println(array[i]);
     Wire.write(array[i]);
   }
   Serial.println("Acabei de enviar");
@@ -130,23 +142,27 @@ int binToInt(int *array) {
   for (int i = 0; i < 8; i++) {
     res += array[i] * pow(2, 7-i);
   }
+  Serial.print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA  ");
+  Serial.println(res);
   return res;
 }
 
 
 // pedestRedFailing, pedestYellowFailing, pedestGreenFailing, redFailing, yellowFailing, greenFailing, timerActivated, 0]
 void checkStatus() {
-  for(int i = 1; i < 2; i++){
-    int s = digitalRead(ped_sem[i]);
-    //int s = 0;
+  for(int i = 0; i < 3; i++){
+    //int s = digitalRead(ped_sem[i]);
+    int s = 0;
     status[i] = s;
   }
 
-   for(int i = 1; i < 3; i++){
-    // int s = digitalRead(inner_sem[i]);
+   for(int i = 0; i < 3; i++){
+    //int s = digitalRead(inner_sem[i]);
     int s = 0;
-    status[i+2] = s;
+    status[i+3] = s;
   }
+
+  status[7] = 0;
 }
 
 void checkPedestrianButton(){
@@ -171,6 +187,7 @@ void loop(){
 
   if (power){
     checkPedestrianButton();
+    checkStatus();
     switch(state){
     case 0:{ // API_RED
 
