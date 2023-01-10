@@ -182,7 +182,7 @@ void processResponse(int *array) {
 
 // Converts a decimal integer to a binary array
 void *intToBin(int num, int* info) {
-  for (int i = 7; num > 0; i--) {
+  for (int i = 7; num>=0 && i>=0 ; i--) {
     info[i] = num % 2;
     num = num / 2;
   }
@@ -255,9 +255,9 @@ void control() {
     // current_timer = millis();
 
     if (millis() - change_timer > entry_timer || first_time ) {
+      timer_activated = false;
       controlSemaphores();
-       first_time = false;
-       timer_activated = false;
+      first_time = false;
       // current_timer = millis();
     }
      for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++){
