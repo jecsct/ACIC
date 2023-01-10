@@ -24,6 +24,7 @@ namespace Server
         int *response = receiveMessage(msg[2], message.resp_size);
         
         bool status = message.receive(response);
+
     }
 
     void sendMessage(uint8_t *message, uint8_t size)

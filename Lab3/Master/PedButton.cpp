@@ -1,24 +1,24 @@
-#include "Buttons.hpp"
+#include "PedButton.hpp"
 
 
-namespace Buttons {
+namespace PedButton {
 
 const uint8_t buttonCount      = 2;
 const Button buttonPins[]      = {Power, Ped};
 
-bool lastState[buttonCount];
-Function callbackFn[buttonCount];
+bool lastState;
 
 
-void initialize() {
+void initialize(int buttonPin, Function fn) {
+    pin = buttonPin;
+    callback = fn;
+
   // Set all button pins to input
-  for (int i; i < buttonCount; i++) {
-    pinMode(buttonPins[i], INPUT); 
-  }
+  pinMode(Pin, INPUT);
   // Set the last state to true.
-  memset(lastState, static_cast<uint8_t>(true), sizeof lastState);
+  lastState = true;
   // Set all callbacks to nullptr
-  memset(callbackFn, 0, sizeof callbackFn);
+  memset(callback, 0, sizeof callback);
 }
 
 

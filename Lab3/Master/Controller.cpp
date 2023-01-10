@@ -8,7 +8,9 @@ namespace Controller {
         new ControllerModeOn();
         new ControllerModeOff();
     }
-
+    void initialize() {
+        gSlave[static_cast<uint8_t>(gCurrentMode)]->initialize();
+    }
     void setState(Mode mode) {
         if (gCurrentMode != mode) {
             gCurrentMode = mode;

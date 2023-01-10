@@ -5,24 +5,20 @@
 
 /// A module to handle button presses.
 ///
-namespace Buttons
-{
+namespace PedButton {
 
     /// The callback function.
     ///
     typedef void (*Function)();
 
-    /// The button.
-    ///
-    enum Button : uint8_t
-    {
-        Power = 2,
-        Ped = 13,
-    };
+    const int pin;
+
+    Function callback;
+
 
     /// Initialize the buttons module.
     ///
-    void initialize();
+    void initialize(int buttonPin, Function fn);
 
     /// Set a callback if the given button is pressed.
     ///
