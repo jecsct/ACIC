@@ -7,9 +7,9 @@
 #define YELLOW_TIMER 500
 
 //inner semaphore
-const int outer_sem[]= {5,6,7};
+const int inner_sem[]= {5,6,7};
 //outter semaphore
-const int inner_sem[]= {8,9,10};
+const int outer_sem[]= {8,9,10};
 //pedrestrian semaphore
 const int ped_sem[]= {11,12};
 //Pin for the pedestrian button
@@ -73,11 +73,13 @@ void processMessage(int *array){
 
   switch(received_message){
     case 0:{ // API_RED
+      // Serial.println("RED");
       power=true;
       state = 0;
       break;
     }
     case 1:{ //API_GREEN
+      // Serial.println("GREEN");
       power=true;
       state = 1;
       break;
@@ -85,7 +87,7 @@ void processMessage(int *array){
     case 2:{ //API_OFF
       state = 2;
       power=false;
-      Serial.println("OFF");
+      // Serial.println("OFF");
       break;
     }
   }
@@ -93,7 +95,7 @@ void processMessage(int *array){
 
 void receiveEvent(){
 
-  Serial.println("RECEBI MENSAEGM");
+  // Serial.println("RECEBI MENSAEGM");
 
   int *array = new int[4];
   int i = 0;
@@ -107,19 +109,24 @@ void receiveEvent(){
 }
 
 void requestEvent(){
-  Serial.println("//////////////////////");
-  Serial.println(status[0]);
-  Serial.println(status[1]);
-  Serial.println(status[2]);
-  Serial.println(status[3]);
-  Serial.println(status[4]);
-  Serial.println(status[5]);
-  Serial.println(status[6]);
-  Serial.println(status[7]);
-  Serial.println("//////");
+  // Serial.println("//////////////////////");
+  // Serial.println(status[0]);
+  // Serial.println(status[1]);
+  // Serial.println(status[2]);
+  // Serial.println(status[3]);
+  // Serial.println(status[4]);
+  // Serial.println(status[5]);
+  // Serial.println(status[6]);
+  // Serial.println(status[7]);
+  // Serial.println("//////");
   
 
-  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,binToInt(status));
+void resetButtonStatus()
+{
+  status[6]=0;
+}
+
+int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,binToInt(status)){
   // Serial.println("Comecei a enviar");
   // Serial.print("received_message ");
   // Serial.println(received_message);
@@ -132,7 +139,8 @@ void requestEvent(){
     //Serial.println(array[i]);
     Wire.write(array[i]);
   }
-  Serial.println("Acabei de enviar");
+  // Serial.println("Acabei de enviar");
+  resetButtonStatus();
   delete[] array;
 }
 
@@ -142,8 +150,8 @@ int binToInt(int *array) {
   for (int i = 0; i < 8; i++) {
     res += array[i] * pow(2, 7-i);
   }
-  Serial.print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA  ");
-  Serial.println(res);
+  // Serial.print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA  ");
+  // Serial.println(res);
   return res;
 }
 
@@ -168,8 +176,8 @@ void checkStatus() {
 void checkPedestrianButton(){
   int value = digitalRead(PED_BUTTON);
   if ( value == HIGH) {
-  Serial.print("BBBBBBBBBBBBBBB: ");
-  Serial.println(value);
+  // Serial.print("BBBBBBBBBBBBBBB: ");
+  // Serial.println(value);
     status[6] = 1;
   }
 
@@ -205,8 +213,8 @@ void loop(){
       setLEDPower(outer_sem[0], true);  // outer red on
       setLEDPower(inner_sem[2], true); // inner green on
 
-      setLEDPower(ped_sem[1], false);  //ped red off
-      setLEDPower(ped_sem[0], true);   // ped green on
+      setLEDPower(ped_sem[0], false);  //ped red off
+      setLEDPower(ped_sem[1], true);   // ped green on
 
       status[6] = 0;
 
@@ -228,8 +236,8 @@ void loop(){
       setLEDPower(outer_sem[2], true);  // outer red on
       setLEDPower(inner_sem[0], true); // inner green on
 
-      setLEDPower(ped_sem[0], false);  //ped red off
-      setLEDPower(ped_sem[1], true);   // ped green on
+      setLEDPower(ped_sem[1], false);  //ped red off
+      setLEDPower(ped_sem[0], true);   // ped green on
 
       state = 10;
       break;
