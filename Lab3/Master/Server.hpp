@@ -12,14 +12,7 @@ namespace Server {
 
 /// The color of the LED
 ///
-enum class Message : uint8_t {
-  RED = 0,
-  GREEN = 1,
-  OFF = 2,
-  PING = 3,
-  ACK = 4,
-  STATUS = 5,
-};
+
 
 /// Initialize the display module.
 ///

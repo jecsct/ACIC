@@ -16,6 +16,16 @@ namespace Server
         Wire.begin();
     }
 
+    void communicate(Message message) {
+        int *msg = message.send();
+
+        sendMessage(msg, message.size);
+        
+        int *response = receiveMessage(msg[2], message.resp_size);
+        
+        bool status = message.receive(response);
+    }
+
     void sendMessage(uint8_t *message, uint8_t size)
     {
         uint8_t target = message[2];
