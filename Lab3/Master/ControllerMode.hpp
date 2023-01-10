@@ -9,6 +9,11 @@ class ControllerMode
 {
 public:
   virtual void loop() = 0;
+private:
+  uint8_t change_timer = 0;
+  uint8_t entry_timer = 0;
+  bool first_time = 0;
+  uint8_t currentGreenEntrySemaphore = 0;
 };
 
 class ControllerModeOn : public ControllerMode

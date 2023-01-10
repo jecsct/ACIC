@@ -9,5 +9,4 @@ void setup() {
 
 void loop() {
   Slave::loop();
-  Server::loop();
 }

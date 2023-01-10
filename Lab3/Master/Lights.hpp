@@ -7,7 +7,8 @@
 
 /// The display module to control the attached LEDs
 ///
-namespace Lights {
+namespace Lights
+{
 
     enum Light : uint8_t
     {
@@ -21,8 +22,8 @@ namespace Lights {
         OuterGreen = 7,
     };
 
-
-void initialize();
-
+    void initialize();
+    void turnOnLight(Light light);
+    void turnOffLight(Light light);
 
 }

@@ -1,7 +1,7 @@
-#include "PedButton.hpp"
+#include "ControllerSensors.hpp"
 
 
-namespace PedButton {
+namespace ControllerSensors {
 
   // The previous button state
   bool lastState = false;

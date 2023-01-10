@@ -9,7 +9,7 @@ namespace Controller {
         new ControllerModeOff();
     }
     void initialize() {
-        gSlave[static_cast<uint8_t>(gCurrentMode)]->initialize();
+        gController[static_cast<uint8_t>(gCurrentMode)]->initialize();
     }
     void setState(Mode mode) {
         if (gCurrentMode != mode) {
@@ -22,6 +22,10 @@ namespace Controller {
             setState(Mode::On);
         else
             setState(Mode::Off);
+    }
+
+    void loop() {
+        gController[static_cast<uint8_t>(gCurrentMode)]->loop();
     }
 
 }

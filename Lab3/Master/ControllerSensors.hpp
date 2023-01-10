@@ -4,7 +4,7 @@
 
 
 // A module to handle thepedestrian button.
-namespace PedButton {
+namespace ControllerSensors {
 
     typedef void (*Function)();
 

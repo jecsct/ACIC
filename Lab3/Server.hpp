@@ -22,33 +22,8 @@ void initialize();
 ///
 /// @return The maximum level value.
 ///
-uint8_t getMaximumLevel();
+void loop();
 
-/// Get the level of the givem LED.
-///
-/// @param color The color of the LED to retrieve.
-///
-uint8_t getLevel(Color color);
-
-/// Get the level of the givem LED.
-///
-/// @param index The index of the LED to retrieve (0-2).
-///
-uint8_t getLevel(uint8_t index);
-
-/// Set the level of the given LED.
-///
-/// @param color The color of the LED to change.
-/// @param level The level for the LED.
-///
-void setLevel(Color color, uint8_t level);
-
-/// Set the level of the given LED.
-///
-/// @param index The index of the LED to change (0-2).
-/// @param level The level for the LED.
-///
-void setLevel(uint8_t index, uint8_t level);
-
+void communicate(Message message);
 
 }
