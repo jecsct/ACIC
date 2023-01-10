@@ -1,13 +1,50 @@
 #include <Wire.h>
-#include "Slave.hpp"
-#include "../Server.hpp"
 
-void setup() {
-  Slave::initialize();
-  Server::initialize();
+//Adress of the slave arduino
+#define SLAVE_ADDR 1
+
+//Time period for yellow light
+#define YELLOW_TIMER 500
+
+//inner semaphore
+const int outer_sem[]= {5,6,7};
+//outter semaphore
+const int inner_sem[]= {8,9,10};
+//pedrestrian semaphore
+const int ped_sem[]= {11,12};
+//Pin for the pedestrian button
+#define PED_BUTTON 13
+//Indicates if pedestrian clicked the pedestrian button this cycle
+bool pedestrian_clicked = false;
+
+//Defines if system is on or off 
+bool power = false;
+
+const int off_blink_timer=500;
+
+int received_message = 0;
+int received_message_entry_number = 0;
+
+int *status = new int[7];
+
+
+//Indicates the mode in which the system is working on
+int state = 2; //API OFF
+
+
+void semaphores_setup(){
+  for ( int i = 0 ; i < 3 ; i++){
+    pinMode(inner_sem[i], OUTPUT); 
+  }
+  for ( int i = 0 ; i < 3 ; i++){
+    pinMode(outer_sem[i], OUTPUT); 
+  }
+  for ( int i = 0 ; i < 2 ; i++){
+    pinMode(ped_sem[i], OUTPUT); 
+  }
+  pinMode(PED_BUTTON, INPUT); 
 }
 
-<<<<<<< HEAD
 
 void setLEDPower(int pinEntry, bool output){
   if (output){
@@ -33,6 +70,7 @@ void processMessage(int *array){
   received_message_entry_number = array[0];
   received_message = array[1];
 
+  Serial.println(received_message);
 
   switch(received_message){
     case 0:{ // API_RED
@@ -65,41 +103,31 @@ void receiveEvent(){
   }
   array[i] = Wire.read();
   processMessage(array);
-  free(array);
 }
 
 void requestEvent(){
-  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,255);
+  int *array = getApiMessageResponse(received_message, 0, received_message_entry_number, binToInt(status));
   Serial.println("Comecei a enviar");
-  Serial.print("received_message ");
-  Serial.println(received_message);
-  Serial.print("receive message entry number ");
-  Serial.println(received_message_entry_number);
-  Serial.print("response size ");
-  Serial.println(array[0]);
-
   for(int i = 1; i < array[0]; i++){
-    Serial.println(array[i]);
+  Serial.println(array[i]);
     Wire.write(array[i]);
   }
   Serial.println("Acabei de enviar");
 }
 
-// Converts a binary array to a decimal integer
 int binToInt(int *array) {
   int res = 0;
   for (int i = 0; i < 8; i++) {
-    res += array[i] * pow(2, 7-i);
+    res += array[i] * pow(2, i);
   }
   return res;
 }
 
-
 //[ pedestRedFailing, pedestYellowFailing, pedestGreenFailing, redFailing, yellowFailing, greenFailing, timerActivated, 0]
 void checkStatus() {
   for(int i = 1; i < 2; i++){
-    int s = digitalRead(ped_sem[i]);
-    //int s = 0;
+    // int s = digitalRead(ped_sem[i]);
+    int s = 0;
     status[i] = s;
   }
 
@@ -209,9 +237,4 @@ void loop(){
     }
 
   }
-=======
-void loop() {
-  Slave::loop();
-  Server::loop();
->>>>>>> 998358fdf235cf713f704190283a9be452935380
 }

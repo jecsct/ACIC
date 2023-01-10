@@ -1,6 +1,6 @@
 #include "Display.hpp"
 
-namespace Display
+namespace Lights
 {
 
     const uint8_t cInnerSemCount = 3;
@@ -10,15 +10,15 @@ namespace Display
     {
         for (int i = 0; i < cInnerSemCount; i++)
         {
-
             pinMode(cInnerSemCount[i], OUTPUT);
         }
     }
-
-
-    void loop()
-    {
-
+    
+    void turnOnLight(Light light) {
+        digitalWrite(light, HIGH);
+    }
+    void turnOffLight(Light light) {
+        digitalWrite(light, LOW);
     }
 
 }
