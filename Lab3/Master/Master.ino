@@ -220,27 +220,39 @@ void sendMessage(char message, int entry_number) {
     //Fazertimeout aqui!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-------------------------------------------------------------------------------
     Serial.print("AVAILABLE BYTES:  ");
     Serial.println(Wire.available());
+    int max_idx=0;
     while (Wire.available()) {
-      if (Wire.available()){
         blinkComLed();
-        Serial.println("AAAAAAAAAAAAAAAAAAAAAAAAA");
         Serial.println("AAAAAAAAAAAAAAAAAAAAAAAAA");
         int c = Wire.read();
         // Serial.println(c);
         if (idx == -1) {
+          Serial.println(c);
+          max_idx = c;
+          Serial.println(max_idx);
           response_array = new int[c];
         } else {
           response_array[idx] = c;
         }
         idx++;
-      }
+        Serial.println(max_idx);
+
+        
+        if ( idx == max_idx )
+        {
+          Serial.println("----------------------------------------------------------------------------------------------------------------------------------------");
+          processResponse(response_array);
+        }
         //Serial.println(c);
     }
     Serial.println("BBBBBBBBBBBBBBBB");
     Serial.print("Response_array:   ");
     Serial.println(response_array[0]);
-    processResponse(response_array);
-    // free(response_array);
+    //processResponse(response_array);
+   // free(response_array);
+
+    Serial.println(max_idx);
+    free(max_idx);
     delete[] response_array;
     delete[] array;
   }
