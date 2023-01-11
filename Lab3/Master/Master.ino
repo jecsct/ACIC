@@ -65,7 +65,7 @@ const unsigned long timeout_timer = 1000;
 
 void blinkComLed() {
   digitalWrite(COM_LED, HIGH);
-  delay(10);
+  delay(5);
   digitalWrite(COM_LED, LOW);
 }
 
@@ -321,19 +321,6 @@ void sendPing() {
 }
 void loop() {
 
-
-  // while ( true ){
-
-  //   sendMessage(0, 1);
-
-
-  //   delay(5000);
-
-  //   sendMessage(1,1);
-
-  //   delay(5000);
-  // }
-
   checkPowerButton();
 
   //Serial.print("TIMER");
@@ -358,10 +345,11 @@ void loop() {
             setLEDPower(outer_sem[2], false);  // outer green off
             setLEDPower(inner_sem[0], false);  // inner red off
 
-            setLEDPower(outer_sem[1], true);  // outer yellow on
-            setLEDPower(inner_sem[1], true);  // inner yellow on
-
-            delay(500);
+            if (millis() < change_timer + 500) {
+              setLEDPower(outer_sem[1], true);  // outer yellow on
+              setLEDPower(inner_sem[1], true);  // inner yellow on
+              break;
+            }
 
             setLEDPower(inner_sem[1], false);  // inner yellow off
             setLEDPower(outer_sem[1], false);  // outer yellow off
@@ -386,10 +374,11 @@ void loop() {
             setLEDPower(outer_sem[0], false);  // outer green off
             setLEDPower(inner_sem[2], false);  // inner red off
 
-            setLEDPower(outer_sem[1], true);  // outer yellow on
-            setLEDPower(inner_sem[1], true);  // inner yellow on
-
-            delay(500);
+            if (millis() < change_timer + 500) {
+              setLEDPower(outer_sem[1], true);  // outer yellow on
+              setLEDPower(inner_sem[1], true);  // inner yellow on
+              break;
+            }
 
             setLEDPower(inner_sem[1], false);  // inner yellow off
             setLEDPower(outer_sem[1], false);  // outer yellow off
