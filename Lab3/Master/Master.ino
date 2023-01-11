@@ -163,6 +163,7 @@ void processResponse(int *array) {
   //Serial.print(">>>>>>>>>> ");
   //Serial.println(array[0]);
 
+  Serial.println(array[0]);
 
   if (array[0] == getApiStatus()) {
     //int info[] = {1,1,1,1,1,1,1,1};
@@ -174,8 +175,8 @@ void processResponse(int *array) {
         handleLedError();
       }
     }
-    //Serial.print("timer: ");
-    //Serial.println(info[6]);
+    Serial.print("timer: ");
+    Serial.println(info[6]);
     if (info[6] == 1) {
       Serial.println("CLICOU NO BOTAO");
       handleTimerActivated();
@@ -217,42 +218,22 @@ void sendMessage(char message, int entry_number) {
     //Serial.println("Comecei a receber");
     int idx = -1;
     int *response_array;
-    //Fazertimeout aqui!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-------------------------------------------------------------------------------
-    Serial.print("AVAILABLE BYTES:  ");
-    Serial.println(Wire.available());
-    int max_idx=0;
     while (Wire.available()) {
         blinkComLed();
-        Serial.println("AAAAAAAAAAAAAAAAAAAAAAAAA");
         int c = Wire.read();
-        // Serial.println(c);
         if (idx == -1) {
-          Serial.println(c);
-          max_idx = c;
-          Serial.println(max_idx);
           response_array = new int[c];
         } else {
           response_array[idx] = c;
         }
         idx++;
-        Serial.println(max_idx);
-
-        
-        if ( idx == max_idx )
-        {
-          Serial.println("----------------------------------------------------------------------------------------------------------------------------------------");
-          processResponse(response_array);
-        }
-        //Serial.println(c);
     }
-    Serial.println("BBBBBBBBBBBBBBBB");
-    Serial.print("Response_array:   ");
-    Serial.println(response_array[0]);
-    //processResponse(response_array);
-   // free(response_array);
 
-    Serial.println(max_idx);
-    free(max_idx);
+    processResponse(response_array);
+    // Serial.println("BBBBBBBBBBBBBBBB");
+    // Serial.print("Response_array:   ");
+    // Serial.println(response_array[0]);
+
     delete[] response_array;
     delete[] array;
   }
@@ -365,6 +346,7 @@ void loop() {
     setLEDPower(POWER_LED, true);
     readPotentiometer();
 
+    Serial.println(entry_timer);
 
     control();
 
