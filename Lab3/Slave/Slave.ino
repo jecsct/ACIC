@@ -183,7 +183,7 @@ void setup(){
 
 void loop(){
   if (millis() > lastCom + 1000) {
-    state = 2;
+    state = getApiOff();
   }
 
   if (power){
