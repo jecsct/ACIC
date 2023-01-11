@@ -14,13 +14,12 @@ const int outer_sem[]= {8,9,10};
 const int ped_sem[]= {11,12};
 //Pin for the pedestrian button
 #define PED_BUTTON 13
-//Indicates if pedestrian clicked the pedestrian button this cycle
-bool pedestrian_clicked = false;
 // When the state last changed
 unsigned long change_timer = millis();
-
+// Time of the last communication
 unsigned long lastCom = millis();
-
+// Time to wait for response before assuming a fault
+const unsigned long timeout_timer = 1000;
 
 //Defines if system is on or off 
 bool power = false;
@@ -31,7 +30,6 @@ int received_message = 0;
 int received_message_entry_number = 0;
 
 int status[] = {0,0,0,0,0,0,0,0};
-
 
 //Indicates the mode in which the system is working on
 int state = 2; //API OFF
@@ -79,13 +77,11 @@ void processMessage(int *array){
 
   switch(received_message){
     case 0:{ // API_RED
-      // Serial.println("RED");
       power=true;
       state = 0;
       break;
     }
     case 1:{ //API_GREEN
-      // Serial.println("GREEN");
       power=true;
       state = 1;
       break;
@@ -93,7 +89,6 @@ void processMessage(int *array){
     case 2:{ //API_OFF
       state = 2;
       power=false;
-      // Serial.println("OFF");
       break;
     }
   }
@@ -101,8 +96,6 @@ void processMessage(int *array){
 
 // Handles the moment when the master sends a message to the slaves
 void receiveEvent(){
-
-  // Serial.println("RECEBI MENSAEGM");
 
   int *array = new int[4];
   int i = 0;
@@ -122,21 +115,16 @@ void requestEvent(){
   int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,binToInt(status));
 
   for(int i = 1; i < array[0]; i++){
-    Serial.println(array[i]);
     Wire.write(array[i]);
   }
-  Serial.print("Acabei de enviar");
-  Serial.println(array[6]);
   resetButtonStatus();
   delete[] array;
 }
 
 // Resets the entry in the response array which tells the master that the pedestrian button was pressed
-void resetButtonStatus()
-{
+void resetButtonStatus() {
   status[6]=0;
 }
-
 
 // Converts a binary array to a decimal integer
 int binToInt(int *array) {
@@ -144,11 +132,8 @@ int binToInt(int *array) {
   for (int i = 0; i < 8; i++) {
     res += array[i] * pow(2, 7-i);
   }
-  // Serial.print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA  ");
-  // Serial.println(res);
   return res;
 }
-
 
 // pedestRedFailing, pedestYellowFailing, pedestGreenFailing, redFailing, yellowFailing, greenFailing, timerActivated, 0]
 void checkStatus() {
@@ -170,12 +155,9 @@ void checkStatus() {
 //Checks if the pedestrian was pressed
 void checkPedestrianButton(){
   int value = digitalRead(PED_BUTTON);
-  if ( value == HIGH) {
-  // Serial.print("BBBBBBBBBBBBBBB: ");
-  // Serial.println(value);
+  if (value == HIGH) {
     status[6] = 1;
   }
-
 }
 
 void setup(){
@@ -187,7 +169,7 @@ void setup(){
 }
 
 void loop(){
-  if (millis() > lastCom + 1000) {
+  if (millis() > lastCom + timeout_timer) {
     state = getApiOff();
   }
 
@@ -250,7 +232,6 @@ void loop(){
       powerOff();
 
       power=false;
-      Serial.println("OFF");
       break;
     }
   }

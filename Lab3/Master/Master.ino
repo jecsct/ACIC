@@ -18,7 +18,6 @@ const int ped_sem[] = { 11, 12 };
 //Blink timer when turned off
 const int off_blink_timer = 500;
 
-
 //Pin do LED vermelho que indica se o sistema esta ligado ou nao
 #define POWER_LED 3
 //Pin do LED azul da comunicacao
@@ -49,11 +48,10 @@ bool first_time = true;
 unsigned long change_timer = millis();
 //Indicates the semaphore that shoukd be turned to green
 int currentGreenEntrySemaphore = 0;
-
+// Time of the last communication
 unsigned long lastCom = millis();
-
-
-// bool lightsPower = false;
+// Time to wait for response before assuming a fault
+const unsigned long timeout_timer = 1000;
 
 //Indicates the state to which the leds will go to
 int state = 2;
@@ -66,7 +64,6 @@ int received_message_entry_number = 0;
 //Indicates if the peddestrian button was pressed 
 bool timer_activated;
 
-const unsigned long timeout_timer = 1000;
 
 // Blinks the communication led
 void blinkComLed() {
@@ -88,10 +85,6 @@ void semaphores_setup() {
   }
 
   pinMode(PED_BUTTON, INPUT);
-  pinMode(POWER_BUTTON, INPUT);
-
-  pinMode(POWER_LED, OUTPUT);
-  pinMode(COM_LED, OUTPUT);
 }
 
 // Sets the variable that tells the program what its behaviour should be (On/Off)
@@ -101,7 +94,6 @@ void turnOnOff() {
 
 // Shuts all lights in the system down
 void powerOff() {
-
   power = false;
 
   for (int i = 0; i < 3; i++) {
@@ -119,8 +111,6 @@ void powerOff() {
 void updateSemaphore(int *array) {
   received_message_entry_number = array[1];
   received_message = array[2];
-
-  //Serial.println(received_message);
 
   switch (received_message) {
     case 0: // API_RED
@@ -151,31 +141,21 @@ void setLEDPower(int pinEntry, bool output) {
   }
 }
 
-void handleLedError() {
-}
-
 //handles the event where the pedestrian button was clicked
 void handleTimerActivated() {
   if (!timer_activated) {
-    Serial.println("timer received");
-
     timer_activated = true;
     change_timer = change_timer - ((entry_timer - (millis() - change_timer)) / 2);
   }
 }
 
+void handleLedError() {
+}
+
 //processes the PING response(STATUS) from the slaves
 void processResponse(int *array) {
 
-  Serial.print(">>>>>>>>>> ");
-  //Serial.println(array[0]);
-
-  Serial.println(array[0]);
-
-
   if (array[0] == getApiStatus()) {
-    //int info[] = {1,1,1,1,1,1,1,1};
-
     int *info = new int[8];
     intToBin(array[2], info);
     for (int i = 0; i < 5; i++) {
@@ -183,10 +163,7 @@ void processResponse(int *array) {
         handleLedError();
       }
     }
-    Serial.print("timer: ");
-    Serial.println(info[6]);
     if (info[6] == 1) {
-      Serial.println("CLICOU NO BOTAO");
       handleTimerActivated();
     }
     delete[] info;
@@ -205,14 +182,11 @@ void *intToBin(int num, int *info) {
 //Sends and receives a message to a given address number
 void sendMessage(char message, int entry_number) {
   if (entry_number == 0 && message != getApiStatus()) {
-    //Serial.println("ENVIEI PARA MIM");
     int *array = getApiMessage(message, CONTROLLER_ENTRY, entry_number);
     blinkComLed();
     updateSemaphore(array);
     delete[] array;
   } else {
-
-    //Serial.println("ENVIEI PARA OUTRO");
 
     Wire.beginTransmission(entry_number);
     int *array = getApiMessage(message, CONTROLLER_ENTRY, entry_number);
@@ -224,7 +198,6 @@ void sendMessage(char message, int entry_number) {
 
     Wire.endTransmission();
     Wire.requestFrom(entry_number, getMessageResponseSize(message));
-    //Serial.println("Comecei a receber");
     int idx = -1;
     int *response_array;
     while (Wire.available()) {
@@ -240,10 +213,6 @@ void sendMessage(char message, int entry_number) {
     }
 
     processResponse(response_array);
-    // Serial.println("BBBBBBBBBBBBBBBB");
-    // Serial.print("Response_array:   ");
-    // Serial.println(response_array[0]);
-
     delete[] response_array;
     delete[] array;
   }
@@ -262,7 +231,6 @@ void readPotentiometer() {
   entry_timer = map(pot_read, 0, 1023, 2, 15) * 1000;  // convert to [2, 15] interval
 }
 
-
 // Checks if it is time to change the state of the roundabout
 void control() 
 {
@@ -276,23 +244,17 @@ void control()
     currentGreenEntrySemaphore++;
   }
 
-  // for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++) {
-  //   sendMessage(getApiPing(), slave_addresses[entry_number]);
-  // }
-
 }
 
 //Sends pings to every slave address
-void sendPings()
-{
+void sendPings() { 
   for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++) {
     sendMessage(getApiPing(), slave_addresses[entry_number]);
   }
 }
 
 //changes the state of the roundabout
-void controlSemaphores() 
-{
+void controlSemaphores()  {
   for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++) 
   {
     if (entry_number != currentGreenEntrySemaphore) 
@@ -308,11 +270,22 @@ void controlSemaphores()
   change_timer = millis();
 }
 
+//Checks if the pedestrian was pressed
+void checkPedestrianButton(){
+  int value = digitalRead(PED_BUTTON);
+  if (value == HIGH) {
+    handleTimerActivated();
+  }
+}
+
 //Sets the system up. Is run one time when the system is first runs
 void setup() {
   Serial.begin(9600);
   Wire.begin();
   semaphores_setup();
+  pinMode(POWER_BUTTON, INPUT);
+  pinMode(POWER_LED, OUTPUT);
+  pinMode(COM_LED, OUTPUT);
   power = false;
   entry_timer = 2000;
 }
@@ -332,11 +305,6 @@ void checkPowerButton() {
   }
 }
 
-void sendPing() {
-  for (int i = 0; i < NUMBER_OF_ENTRIES; i++) {
-    sendMessage(getApiPing(), slave_addresses[i]);
-  }
-}
 void loop() {
   if (millis() > lastCom + 1000) {
     powerOff();
@@ -344,14 +312,11 @@ void loop() {
 
   checkPowerButton();
 
-
-
   if (power) {
+    checkPedestrianButton();
 
     setLEDPower(POWER_LED, true);
     readPotentiometer();
-
-    Serial.println(entry_timer);
 
     control();
     sendPings();
@@ -360,7 +325,6 @@ void loop() {
       case 0:
         {  // API_RED
           if (last_state != getApiRed()) {
-            // Serial.println("RED");
             setLEDPower(outer_sem[2], false);  // outer green off
             setLEDPower(inner_sem[0], false);  // inner red off
 
@@ -389,7 +353,6 @@ void loop() {
       case 1:
         {  //API_GREEN
           if (last_state != getApiGreen()) {
-            // Serial.println("GREEN");
             setLEDPower(outer_sem[0], false);  // outer green off
             setLEDPower(inner_sem[2], false);  // inner red off
 
@@ -414,17 +377,9 @@ void loop() {
           state = 10;
           break;
         }
-        // case 2:{ //API_OFF
-
-        //   powerOff();
-
-        //   Serial.println("OFF");
-        //   break;
-        // }
     }
 
   } else {
-    //Serial.println("OFF");
 
     first_time = true;
 
