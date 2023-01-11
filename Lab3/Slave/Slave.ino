@@ -36,7 +36,7 @@ int status[] = {0,0,0,0,0,0,0,0};
 //Indicates the mode in which the system is working on
 int state = 2; //API OFF
 
-
+//SetsUp all the pins in the system
 void semaphores_setup(){
   for ( int i = 0 ; i < 3 ; i++){
     pinMode(inner_sem[i], OUTPUT); 
@@ -50,7 +50,7 @@ void semaphores_setup(){
   pinMode(PED_BUTTON, INPUT); 
 }
 
-
+//Sets the output of a given pin based on a bool value
 void setLEDPower(int pinEntry, bool output){
   if (output){
     digitalWrite(pinEntry,HIGH);
@@ -59,6 +59,7 @@ void setLEDPower(int pinEntry, bool output){
   }
 }
 
+// Shuts all lights in the system down
 void powerOff(){
   for ( int i = 0 ; i < 3 ; i++){
     setLEDPower(inner_sem[i], false); 
@@ -71,6 +72,7 @@ void powerOff(){
   }
 }
 
+//processes the PING message from the master
 void processMessage(int *array){
   received_message_entry_number = array[0];
   received_message = array[1];
@@ -97,6 +99,7 @@ void processMessage(int *array){
   }
 }
 
+// Handles the moment when the master sends a message to the slaves
 void receiveEvent(){
 
   // Serial.println("RECEBI MENSAEGM");
@@ -113,6 +116,7 @@ void receiveEvent(){
   delete[] array;
 }
 
+// Handles the moment when the masters requests a message from a slave
 void requestEvent(){
 
   int *array = getApiMessageResponse(received_message, 0, received_message_entry_number,binToInt(status));
@@ -127,7 +131,7 @@ void requestEvent(){
   delete[] array;
 }
 
-
+// Resets the entry in the response array which tells the master that the pedestrian button was pressed
 void resetButtonStatus()
 {
   status[6]=0;
@@ -163,6 +167,7 @@ void checkStatus() {
   status[7] = 0;
 }
 
+//Checks if the pedestrian was pressed
 void checkPedestrianButton(){
   int value = digitalRead(PED_BUTTON);
   if ( value == HIGH) {
