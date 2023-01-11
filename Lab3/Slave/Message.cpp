@@ -22,19 +22,25 @@ Message *getMessage(MessageID messageID)
 
 int *MessageRED::send(int sender, int target)
 {
+
     int size = 4;
-    int message[size] = {sender, static_cast<int>(MessageID::RED), target, sender + static_cast<int>(MessageID::RED) + target};
+    int *message = new int[size];
+    message[0] = sender;
+    message[1] = static_cast<int>(MessageID::RED);
+    message[2] = target;
+    message[3] = sender + static_cast<int>(MessageID::RED) + target;
     return message;
 }
 // used to control what happens when this message is received
 void MessageRED::onReceive()
 {
+    Serial.println("message red!");
     Slave::setState(Slave::Red);
 }
 // used to repond to this message
 int *MessageRED::respond(int sender, int target)
 {
-    Message* messageACK = new MessageACK();
+    Message *messageACK = new MessageACK();
     int *message = messageACK->send(sender, target);
     return message;
 }
@@ -50,7 +56,11 @@ bool MessageRED::receive(int *message)
 int *MessageGREEN::send(int sender, int target)
 {
     int size = 4;
-    int message[size] = {sender, static_cast<int>(MessageID::GREEN), target, sender + static_cast<int>(MessageID::GREEN) + target};
+    int *message = new int[size];
+    message[0] = sender;
+    message[1] = static_cast<int>(MessageID::GREEN);
+    message[2] = target;
+    message[3] = sender + static_cast<int>(MessageID::GREEN) + target;
     return message;
 }
 
@@ -61,12 +71,12 @@ void MessageGREEN::onReceive()
 
 int *MessageGREEN::respond(int sender, int target)
 {
-    Message* messageACK = new MessageACK();
+    Message *messageACK = new MessageACK();
     int *message = messageACK->send(sender, target);
     return message;
 }
 
-bool MessageGREEN::receive(int* message)
+bool MessageGREEN::receive(int *message)
 {
     return true;
 }
@@ -76,7 +86,11 @@ bool MessageGREEN::receive(int* message)
 int *MessageOFF::send(int sender, int target)
 {
     int size = 4;
-    int message[size] = {sender, static_cast<int>(MessageID::OFF), target, sender + static_cast<int>(MessageID::OFF) + target};
+    int *message = new int[size];
+    message[0] = sender;
+    message[1] = static_cast<int>(MessageID::OFF);
+    message[2] = target;
+    message[3] = sender + static_cast<int>(MessageID::OFF) + target;
     return message;
 }
 void MessageOFF::onReceive()
@@ -86,12 +100,12 @@ void MessageOFF::onReceive()
 
 int *MessageOFF::respond(int sender, int target)
 {
-    Message* messageACK = new MessageACK();
+    Message *messageACK = new MessageACK();
     int *message = messageACK->send(sender, target);
     return message;
 }
 
-bool MessageOFF::receive(int* message)
+bool MessageOFF::receive(int *message)
 {
     return true;
 }
@@ -101,7 +115,11 @@ bool MessageOFF::receive(int* message)
 int *MessagePING::send(int sender, int target)
 {
     int size = 4;
-    int message[size] = {sender, static_cast<int>(MessageID::PING), target, sender + static_cast<int>(MessageID::PING) + target};
+    int *message = new int[size];
+    message[0] = sender;
+    message[1] = static_cast<int>(MessageID::PING);
+    message[2] = target;
+    message[3] = sender + static_cast<int>(MessageID::PING) + target;
     return message;
 }
 void MessagePING::onReceive()
@@ -110,12 +128,12 @@ void MessagePING::onReceive()
 
 int *MessagePING::respond(int sender, int target)
 {
-    Message* messageSTATUS = new MessageSTATUS();
+    Message *messageSTATUS = new MessageSTATUS();
     int *message = messageSTATUS->send(sender, target);
     return message;
 }
 
-bool MessagePING::receive(int* message)
+bool MessagePING::receive(int *message)
 {
     return true;
 }
@@ -125,7 +143,11 @@ bool MessagePING::receive(int* message)
 int *MessageACK::send(int sender, int target)
 {
     int size = 4;
-    int message[size] = {sender, static_cast<int>(MessageID::ACK), target, sender + static_cast<int>(MessageID::ACK) + target};
+    int *message = new int[size];
+    message[0] = sender;
+    message[1] = static_cast<int>(MessageID::ACK);
+    message[2] = target;
+    message[3] = sender + static_cast<int>(MessageID::ACK) + target;
     return message;
 }
 void MessageACK::onReceive()
@@ -134,7 +156,7 @@ void MessageACK::onReceive()
 int *MessageACK::respond(int sender, int target)
 {
 }
-bool MessageACK::receive(int* message)
+bool MessageACK::receive(int *message)
 {
     return true;
 }
@@ -144,7 +166,12 @@ bool MessageACK::receive(int* message)
 int *MessageSTATUS::send(int sender, int target)
 {
     int size = 4;
-    int message[size] = {sender, static_cast<int>(MessageID::STATUS), Slave::getStatus(), sender + static_cast<int>(MessageID::STATUS) + target + Slave::getStatus()};
+    int *message = new int[size];
+    message[0] = sender;
+    message[1] = static_cast<int>(MessageID::STATUS);
+    message[2] = target;
+    message[3] = Slave::getStatus();
+    message[4] = sender + static_cast<int>(MessageID::STATUS) + target + Slave::getStatus();
     return message;
 }
 
@@ -154,7 +181,7 @@ void MessageSTATUS::onReceive()
 int *MessageSTATUS::respond(int sender, int target)
 {
 }
-bool MessageSTATUS::receive(int* message)
+bool MessageSTATUS::receive(int *message)
 {
     return true;
 }

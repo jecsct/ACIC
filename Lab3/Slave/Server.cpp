@@ -2,21 +2,39 @@
 #include <Wire.h>
 #include "Message.hpp"
 
-// Warning: This is a code example for the article "guideline for modular firmware".
-//          It is code in a transition phase, do not use it as it is!
-
 namespace Server
 {
-    const bool cSlave = false;
-    const int cEntity = 0;
-    const int cEntityCount = 5;
-    const int cEntityList[cEntityCount] = {0, 1, 2};
+    const bool cSlave = true;
+    int cEntity = 0;
 
     MessageID previousMessage;
 
     int *queueMessage;
 
-    void initialize()
+    Message *getMessage(MessageID messageID)
+    {
+        switch (static_cast<int>(messageID))
+        {
+        case static_cast<int>(MessageID::RED):
+            return new MessageRED();
+            break;
+        case static_cast<int>(MessageID::GREEN):
+            return new MessageGREEN();
+            break;
+        case static_cast<int>(MessageID::OFF):
+            return new MessageOFF();
+            break;
+        case static_cast<int>(MessageID::STATUS):
+            return new MessageSTATUS();
+            break;
+        case static_cast<int>(MessageID::ACK):
+            return new MessageACK();
+            break;
+        }
+        return nullptr;
+    }
+
+    void initialize(int entity)
     {
         if (cSlave)
         {
@@ -28,36 +46,42 @@ namespace Server
         {
             Wire.begin();
         }
+        cEntity = entity;
     }
 
     void receiveEvent()
     {
-      int *msg = receiveMessage(0, 4);
-    //   MessageID messageID = message[1];
-      Message *message = getMessage(static_cast<MessageID>(msg[1]));
-      message->onReceive();
+        int *msg = receiveMessage(0, 4);
+        //   MessageID messageID = message[1];
+        Message *message = getMessage(static_cast<MessageID>(msg[1]));
+        message->onReceive();
+        free(message);
     }
 
     void requestEvent()
     {
         Message *message = getMessage(previousMessage);
-        sendMessage(message->respond(0, 0), 4); //wrong
+        sendMessage(message->respond(0, 0), 4); // wrong
+        free(message);
     }
 
     void communicate(Message *message, int target)
     {
         int *msg = message->send(cEntity, target);
 
-        // sendMessage(msg, 4);
-
-        // int *response = receiveMessage(msg[2], 4);
+        sendMessage(msg, 4);
+        int *response = receiveMessage(msg[2], 4);
+        // Serial.println("messagen received!");
         // int x = 0;
-        // bool status = message->receive(&x); //wrong
+        // bool status = message->receive(&x); // wrong
+        // Serial.println("freed");
+        free(msg);
     }
 
     void sendMessage(int *message, int size)
     {
         int target = message[2];
+
         if (target == cEntity)
             sendToOwn(message);
         else
@@ -68,16 +92,23 @@ namespace Server
     {
         int *message;
         if (target == cEntity)
-            message = receiveFromOwn(); 
+        {
+            Serial.println("From own");
+            message = receiveFromOwn();
+        }
         else
+        {
+            Serial.println("From wire");
+            if (!cSlave)
             {
-                if (!cSlave)
-                {
-                    Wire.requestFrom(target, size);
-                }
-
-                message = receiveFromWire(size);
+                Wire.requestFrom(target, size);
             }
+            message = receiveFromWire(size);
+        }
+        Serial.println(message[1]);
+        Message *msg = getMessage(static_cast<MessageID>(message[1]));
+        msg->onReceive();
+        free(msg);
 
         return message;
     }
@@ -102,12 +133,11 @@ namespace Server
         return queueMessage;
     }
 
-    //TRAVASSOS1 *message-------------------------------------------------------------------
     void sendToWire(int *message, int target, int size)
-    //TRAVASSOS2 -----------------------------------------------------------------
     {
         Wire.beginTransmission(target);
-        for (int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++)
+        {
             Wire.write(message[i]);
         }
     }

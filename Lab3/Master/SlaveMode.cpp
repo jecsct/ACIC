@@ -1,12 +1,11 @@
 #include "SlaveMode.hpp"
 
-// Warning: This is a code example for the article "guideline for modular firmware".
-//          It is code in a transition phase, do not use it as it is!
 
 #include "Lights.hpp"
 
 void SlaveModeRed::loop()
 {
+    Serial.println("Slave red");
     if (firstTime)
     {
         Lights::turnOffLight(Lights::OuterGreen);
@@ -30,8 +29,10 @@ void SlaveModeRed::loop()
 
 void SlaveModeGreen::loop()
 {
+    Serial.println("Slave green");
     if (firstTime)
     {
+        Serial.println("[[[[[[[[[[[[[[[[[[[[[[[[[[[ FIRST TIME GREEN ]]]]]]]]]]]]]]]]]]]]]]]]]]");
         Lights::turnOffLight(Lights::OuterRed);
         Lights::turnOffLight(Lights::InnerGreen);
 
@@ -53,10 +54,10 @@ void SlaveModeGreen::loop()
 
 void SlaveModeOff::loop()
 {
+    Lights::turnAllOff();
+    Serial.println("Slave off");
+    delay(500);
     Lights::turnOnLight(Lights::InnerYellow);
     Lights::turnOnLight(Lights::OuterYellow);
-    delay(500);
-    Lights::turnOffLight(Lights::InnerYellow);
-    Lights::turnOffLight(Lights::OuterYellow);
     delay(500);
 }

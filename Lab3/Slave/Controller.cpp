@@ -12,7 +12,8 @@ namespace Controller
 
     ControllerMode *const gController[] = {
         new ControllerModeOn(),
-        new ControllerModeOff()};
+        new ControllerModeOff()}
+        ;
 
     void initialize(int *slave_addrs, int n_entries)
     {
@@ -21,16 +22,19 @@ namespace Controller
         entries = slave_addrs;
         numEntries = n_entries;
     }
+    
     void setState(Mode mode)
     {
         if (gCurrentMode != mode)
         {
+             gController[static_cast<int>(gCurrentMode)]->firstTime = true;
             gCurrentMode = mode;
         }
     }
 
     void cycleMode()
     {
+        Serial.println("cycleMode");
         if (gCurrentMode == Mode::Off)
             setState(Mode::On);
         else

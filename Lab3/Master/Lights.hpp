@@ -28,5 +28,6 @@ namespace Lights
     void initialize();
     void turnOnLight(Light light);
     void turnOffLight(Light light);
+    void turnAllOff();
 
 }

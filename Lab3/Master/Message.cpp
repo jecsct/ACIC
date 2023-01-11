@@ -5,19 +5,6 @@
 // used to Send this message
 
 // Concrete Creator or Client
-Message *getMessage(MessageID messageID)
-{
-    switch (static_cast<int>(messageID))
-    {
-    case static_cast<int>(MessageID::RED):
-        return new MessageRED();
-        break;
-    case static_cast<int>(MessageID::GREEN):
-        return new MessageGREEN();
-        break;
-    }
-    return nullptr;
-}
 //-------------------------------- Message RED --------------------------------
 
 int *MessageRED::send(int sender, int target)
@@ -165,7 +152,7 @@ bool MessageACK::receive(int *message)
 
 int *MessageSTATUS::send(int sender, int target)
 {
-    int size = 4;
+    int size = 5;
     int *message = new int[size];
     message[0] = sender;
     message[1] = static_cast<int>(MessageID::STATUS);

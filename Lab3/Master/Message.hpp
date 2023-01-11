@@ -19,6 +19,8 @@ public:
   virtual void onReceive();
   virtual int *respond(int sender, int target);
   virtual bool receive(int *message);
+  int size = 4;
+  int reqSize = 5;
 };
 
 class MessageRED : public Message
@@ -28,6 +30,8 @@ public: // Implement Message
   void onReceive();
   int *respond(int sender, int target);
   bool receive(int *message);
+  int size = 4;
+  int reqSize = 4;
 };
 
 class MessageGREEN : public Message
@@ -37,6 +41,8 @@ public: // Implement Message
   void onReceive();
   int *respond(int sender, int target);
   bool receive(int *message);
+  int size = 4;
+  int reqSize = 4;
 };
 
 class MessageOFF : public Message
@@ -46,6 +52,8 @@ public: // Implement Message
   void onReceive();
   int *respond(int sender, int target);
   bool receive(int *message);
+  int size = 4;
+  int reqSize = 4;
 };
 
 class MessagePING : public Message
@@ -55,6 +63,8 @@ public: // Implement Message
   void onReceive();
   int *respond(int sender, int target);
   bool receive(int *message);
+  int size = 4;
+  int reqSize = 5;
 };
 
 class MessageSTATUS : public Message
@@ -64,6 +74,8 @@ public: // Implement Message
   void onReceive();
   int *respond(int sender, int target);
   bool receive(int *message);
+  int size = 5;
+  int reqSize = 4;
 };
 
 class MessageACK : public Message
@@ -73,4 +85,6 @@ public: // Implement Message
   void onReceive();
   int *respond(int sender, int target);
   bool receive(int *message);
+  int size = 4;
+  int reqSize = 4;
 };

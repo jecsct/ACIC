@@ -27,6 +27,7 @@ namespace Controller
     {
         if (gCurrentMode != mode)
         {
+            gController[static_cast<int>(gCurrentMode)]->firstTime = true;
             gCurrentMode = mode;
         }
     }
@@ -34,16 +35,27 @@ namespace Controller
     void cycleMode()
     {
         Serial.println("cycleMode");
-        if (gCurrentMode == Mode::Off)
+        if (gCurrentMode == Mode::Off) {
             setState(Mode::On);
-        else
+            Serial.println("ONNNNNNNNNNNNNNNNNNNNN");
+        }
+        else {
             setState(Mode::Off);
+            Serial.println("OFFFFFFFFFFFFFFFFFFF");
+        }
     }
 
     void loop()
     {
         gController[static_cast<int>(gCurrentMode)]->loop(entries, numEntries);
         ControllerSensors::checkPower();
-    }
+        Serial.print(">>>>>>>>>>>>>>>>>>>>>>> ");
+        if (gCurrentMode == Mode::Off) {
+            Serial.println("OFF");
+        }
+        else {
+            Serial.println("ON");
+        }
 
+    }
 }

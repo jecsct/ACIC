@@ -9,17 +9,17 @@ class ControllerMode
 {
 public:
   virtual void loop(int *entries, int numEntries) = 0;
-
+  bool firstTime = true;
 };
 
 class ControllerModeOn : public ControllerMode
 {
 public: // Implement AnimationMode
   void loop(int *entries, int numEntries) override;
+
 private:
   int change_timer = 0;
   int entry_timer = 0;
-  bool first_time = 0;
   int currentGreenEntrySemaphore = 0;
 };
 
@@ -27,6 +27,4 @@ class ControllerModeOff : public ControllerMode
 {
 public: // Implement AnimationMode
   void loop(int *entries, int numEntries) override;
-private:
-    bool _firstTime = false;
 };

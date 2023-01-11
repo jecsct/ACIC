@@ -13,7 +13,7 @@ namespace Server {
 
     /// Initialize the display module.
     ///
-    void initialize();
+    void initialize(int entity);
 
     /// Get the maximum level.
     ///
@@ -23,7 +23,7 @@ namespace Server {
     void requestEvent();
     void communicate(Message *message, int target);
     void sendMessage(int *message, int size);
-    int *receiveMessage(int target, int size);
+    int *receiveMessage(int target);
     int *receiveFromWire(int size);
     int *receiveFromOwn();
     void sendToWire(int *message, int target, int size);

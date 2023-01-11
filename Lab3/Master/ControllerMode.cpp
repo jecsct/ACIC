@@ -7,11 +7,11 @@
 
 void ControllerModeOn::loop(int *entries, int numEntries)
 {
-    // Serial.println("ON");
+    Serial.println("ON");
     Lights::turnOnLight(Lights::ControllerOn);
     entry_timer = ControllerSensors::getPotentiometerValue();
 
-    if (millis() - change_timer > entry_timer || first_time)
+    if (millis() - change_timer > entry_timer || firstTime)
     {
         Message *message = new MessageRED();
         for (int i = 0; i < numEntries; i++) {
@@ -23,10 +23,10 @@ void ControllerModeOn::loop(int *entries, int numEntries)
                 Server::communicate(message, entries[i]); //missing entry number
             }
         }
-        Serial.println("After for");
+        // Serial.println("After for");
         free(message);
-        Serial.print("Green sem : ");
-        Serial.println(currentGreenEntrySemaphore);
+        // Serial.print("Green sem : ");
+        // Serial.println(currentGreenEntrySemaphore);
 
         message = new MessageGREEN();
         Server::communicate(message, currentGreenEntrySemaphore); //missing entry number to green
@@ -35,17 +35,17 @@ void ControllerModeOn::loop(int *entries, int numEntries)
         // currentGreenEntrySemaphore++;
 
         change_timer = millis();
-        first_time = false;
+        firstTime = false;
     }
 }
 
 void ControllerModeOff::loop(int *entries, int numEntries) {
     Serial.println("OFF");
     Lights::turnOffLight(Lights::ControllerOn);
-    if (_firstTime) {
+    if (firstTime) {
         Message *message = new MessageOFF();
         Server::communicate(message, 0);
-        _firstTime = false;
         free(message);
+        firstTime = false;
     }
 }

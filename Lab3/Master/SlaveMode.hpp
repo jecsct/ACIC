@@ -1,31 +1,27 @@
 #pragma once
 
-
 class SlaveMode
 {
 public:
   virtual void loop() = 0;
+  bool firstTime = true;
+
 };
 
 class SlaveModeRed : public SlaveMode
 {
-public: 
+public:
   void loop() override;
-private:
-    bool firstTime = true;
 };
 
 class SlaveModeGreen : public SlaveMode
 {
-public: 
+public:
   void loop() override;
-private:
-    bool firstTime = true;
 };
 
 class SlaveModeOff : public SlaveMode
 {
-public: 
+public:
   void loop() override;
-
 };

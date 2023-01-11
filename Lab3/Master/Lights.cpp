@@ -4,8 +4,8 @@
 namespace Lights
 {
 
-    const int cInnerSemCount = 10;
-    const int cInnerSem[cInnerSemCount] = {
+    const int lightsCount = 10;
+    const int lights[lightsCount] = {
         static_cast<int>(ControllerOn),
         static_cast<int>(ControllerCom),
         static_cast<int>(InnerRed),
@@ -21,10 +21,10 @@ namespace Lights
     void initialize()
     {
         Serial.println("initi lights");
-        for (int i = 0; i < cInnerSemCount; i++)
+        for (int i = 0; i < lightsCount; i++)
         {   
-            Serial.println(cInnerSem[i]);
-            pinMode(cInnerSem[i], OUTPUT);
+            Serial.println(lights[i]);
+            pinMode(lights[i], OUTPUT);
         }
     }
 
@@ -35,6 +35,12 @@ namespace Lights
     void turnOffLight(Light light)
     {
         digitalWrite(static_cast<int>(light), LOW);
+    }
+
+    void turnAllOff() {
+        for (int i = 0; i < lightsCount; i++) {   
+            digitalWrite(lights[i], LOW);
+        }
     }
 
 }

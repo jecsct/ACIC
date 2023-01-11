@@ -3,7 +3,7 @@
 namespace ControllerSensors
 {
 
-  // The previous power button state
+  // The previous power button state 
   bool lastButtonState = false;
   //  The power button pin
   int powerPin;
@@ -29,6 +29,7 @@ namespace ControllerSensors
     if (buttonPressed != lastButtonState)
     {
       lastButtonState = buttonPressed;
+
       if (buttonPressed)
       {
         powerCallbackFn();

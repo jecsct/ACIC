@@ -7,6 +7,7 @@
 
 void SlaveModeRed::loop()
 {
+    Serial.println("Slave red");
     if (firstTime)
     {
         Lights::turnOffLight(Lights::OuterGreen);
@@ -30,6 +31,7 @@ void SlaveModeRed::loop()
 
 void SlaveModeGreen::loop()
 {
+    Serial.println("Slave green");
     if (firstTime)
     {
         Lights::turnOffLight(Lights::OuterRed);
@@ -53,9 +55,11 @@ void SlaveModeGreen::loop()
 
 void SlaveModeOff::loop()
 {
+    Serial.println("Slave off");
     Lights::turnOnLight(Lights::InnerYellow);
     Lights::turnOnLight(Lights::OuterYellow);
     delay(500);
     Lights::turnOffLight(Lights::InnerYellow);
     Lights::turnOffLight(Lights::OuterYellow);
+    delay(500);
 }

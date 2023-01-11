@@ -3,42 +3,48 @@
 #include "PedButton.hpp"
 #include "Lights.hpp"
 
-namespace Slave {
-    
+namespace Slave
+{
+
     Mode gCurrentMode = Mode::Off;
     Mode gPreviousMode = Mode::Off;
     bool timerActivated = false;
 
-    SlaveMode* const gSlave[] = {
+    SlaveMode *const gSlave[] = {
         new SlaveModeRed(),
         new SlaveModeGreen(),
-        new SlaveModeOff()
-    };
+        new SlaveModeOff()};
 
-    int getStatus() {
+    int getStatus()
+    {
         return 1;
     }
 
-    void setTimerActivated() {
+    void setTimerActivated()
+    {
         timerActivated = true;
     }
 
-    void initialize() {
+    void initialize()
+    {
         Serial.println("init slave");
         // gSlave[static_cast<int>(gCurrentMode)]->initialize();
         Lights::initialize();
         PedButton::initialize(PED_PIN, &setTimerActivated);
-
     }
 
-    void setState(Mode mode) {
-        if (gCurrentMode != mode) {
+    void setState(Mode mode)
+    {
+        if (gCurrentMode != mode)
+        {
+            gSlave[static_cast<int>(gCurrentMode)]->firstTime = true;
             gPreviousMode = gCurrentMode;
             gCurrentMode = mode;
         }
     }
 
-    void loop() {
+    void loop()
+    {
         gSlave[static_cast<int>(gCurrentMode)]->loop();
         PedButton::check();
     }

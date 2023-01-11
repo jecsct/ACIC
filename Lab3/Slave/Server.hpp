@@ -6,15 +6,14 @@
 
 /// Module to communicate
 ///
-namespace Server
-{
+namespace Server {
     Message *getMessage(MessageID message);
     /// The color of the LED
     ///
 
     /// Initialize the display module.
     ///
-    void initialize();
+    void initialize(int entity);
 
     /// Get the maximum level.
     ///
