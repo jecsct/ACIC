@@ -50,6 +50,8 @@ unsigned long change_timer = millis();
 //Indicates the semaphore that shoukd be turned to green
 int currentGreenEntrySemaphore = 0;
 
+unsigned long lastCom = millis();
+
 bool lightsPower = false;
 
 int state = 2;
@@ -160,10 +162,12 @@ void handleTimerActivated() {
 }
 
 void processResponse(int *array) {
-  //Serial.print(">>>>>>>>>> ");
+
+  Serial.print(">>>>>>>>>> ");
   //Serial.println(array[0]);
 
   Serial.println(array[0]);
+
 
   if (array[0] == getApiStatus()) {
     //int info[] = {1,1,1,1,1,1,1,1};
@@ -220,6 +224,7 @@ void sendMessage(char message, int entry_number) {
     int *response_array;
     while (Wire.available()) {
         blinkComLed();
+        lastCom = millis();
         int c = Wire.read();
         if (idx == -1) {
           response_array = new int[c];
@@ -320,6 +325,9 @@ void sendPing() {
   }
 }
 void loop() {
+  if (millis() > lastCom + 1000) {
+    powerOff();
+  }
 
   checkPowerButton();
 
@@ -410,10 +418,10 @@ void loop() {
     first_time = true;
 
     setLEDPower(POWER_LED, false);
-
     for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++) {
       sendMessage(getApiOff(), slave_addresses[entry_number]);
     }
+
 
     unsigned long start_time = millis();
     unsigned long current_time = millis();

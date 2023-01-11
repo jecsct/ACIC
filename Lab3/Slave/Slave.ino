@@ -19,6 +19,9 @@ bool pedestrian_clicked = false;
 // When the state last changed
 unsigned long change_timer = millis();
 
+unsigned long lastCom = millis();
+
+
 //Defines if system is on or off 
 bool power = false;
 
@@ -101,6 +104,7 @@ void receiveEvent(){
   int *array = new int[4];
   int i = 0;
   while(1 < Wire.available()) { 
+    lastCom = millis();
     array[i++] = Wire.read();
   }
   array[i] = Wire.read();
@@ -178,6 +182,9 @@ void setup(){
 }
 
 void loop(){
+  if (millis() > lastCom + 1000) {
+    state = 2;
+  }
 
   if (power){
     checkPedestrianButton();
