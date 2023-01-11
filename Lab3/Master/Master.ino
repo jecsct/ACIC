@@ -149,8 +149,6 @@ void handleTimerActivated() {
   }
 }
 
-void handleLedError() {
-}
 
 //processes the PING response(STATUS) from the slaves
 void processResponse(int *array) {
@@ -160,7 +158,7 @@ void processResponse(int *array) {
     intToBin(array[2], info);
     for (int i = 0; i < 5; i++) {
       if (info[i] == 1) {
-        handleLedError();
+        powerOff();
       }
     }
     if (info[6] == 1) {
@@ -232,18 +230,14 @@ void readPotentiometer() {
 }
 
 // Checks if it is time to change the state of the roundabout
-void control() 
-{
+void control() {
   if (millis() - change_timer > entry_timer || first_time) {
 
     timer_activated = false;
     first_time = false;
-
     controlSemaphores();
-
     currentGreenEntrySemaphore++;
   }
-
 }
 
 //Sends pings to every slave address
@@ -292,7 +286,6 @@ void setup() {
 
 //Checks if the power button was/is pressed
 void checkPowerButton() {
-
   // Button is being pressed
   while (digitalRead(POWER_BUTTON) == HIGH) {
     buttonPressed = true;
@@ -387,7 +380,6 @@ void loop() {
     for (int entry_number = 0; entry_number < NUMBER_OF_ENTRIES; entry_number++) {
       sendMessage(getApiOff(), slave_addresses[entry_number]);
     }
-
 
     unsigned long start_time = millis();
     unsigned long current_time = millis();
