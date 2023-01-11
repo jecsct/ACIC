@@ -4,7 +4,6 @@
 //          It is code in a transition phase, do not use it as it is!
 
 #include <Arduino.h>
-#include <Wire.h>
 
 /// The display module to control the attached LEDs
 ///
@@ -13,16 +12,17 @@ namespace Lights
 
     enum Light : int
     {
-        ControllerOn = 3,
-        ControllerCom = 4,
-        InnerRed = 5,
-        InnerYellow = 6,
-        InnerGreen = 7,
-        OuterRed = 8,
-        OuterYellow = 9,
-        OuterGreen = 10,
-        PedRed = 11,
-        PedGreen = 12,
+        ControllerOn = 0,
+        ControllerCom = 1,
+        InnerRed = 2,
+        InnerYellow = 3,
+        InnerGreen = 4,
+        OuterRed = 5,
+        OuterYellow = 6,
+        OuterGreen = 7,
+        PedRed = 8,
+        PedGreen = 9,
+
     };
 
     void initialize();

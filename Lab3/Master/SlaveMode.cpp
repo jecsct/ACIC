@@ -58,4 +58,5 @@ void SlaveModeOff::loop()
     delay(500);
     Lights::turnOffLight(Lights::InnerYellow);
     Lights::turnOffLight(Lights::OuterYellow);
+    delay(500);
 }

@@ -1,6 +1,7 @@
 #include "Slave.hpp"
 #include "SlaveMode.hpp"
 #include "PedButton.hpp"
+#include "Lights.hpp"
 
 namespace Slave {
     
@@ -23,8 +24,11 @@ namespace Slave {
     }
 
     void initialize() {
+        Serial.println("init slave");
         // gSlave[static_cast<int>(gCurrentMode)]->initialize();
+        Lights::initialize();
         PedButton::initialize(PED_PIN, &setTimerActivated);
+
     }
 
     void setState(Mode mode) {

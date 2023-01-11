@@ -12,7 +12,7 @@ class SlaveModeRed : public SlaveMode
 public: 
   void loop() override;
 private:
-    bool firstTime = false;
+    bool firstTime = true;
 };
 
 class SlaveModeGreen : public SlaveMode
@@ -20,7 +20,7 @@ class SlaveModeGreen : public SlaveMode
 public: 
   void loop() override;
 private:
-    bool firstTime = false;
+    bool firstTime = true;
 };
 
 class SlaveModeOff : public SlaveMode
